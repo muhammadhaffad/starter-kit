@@ -1,5 +1,6 @@
 <?php
 
+use Diglactic\Breadcrumbs\Breadcrumbs;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -15,5 +16,13 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
+    Breadcrumbs::for('home', function($trail) {
+        $trail->push('Home', '/');
+    });
+    Breadcrumbs::for('test', function($trail) {
+        $trail->parent('home');
+        $trail->push('Test', '/test');
+    });
+    Inertia::share('breadcrumbs', Breadcrumbs::generate('test')->toArray());
     return Inertia::render('test');
 });

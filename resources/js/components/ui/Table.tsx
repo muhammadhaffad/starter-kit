@@ -22,7 +22,7 @@ import {
 } from 'react-aria-components';
 import { twMerge } from 'tailwind-merge';
 import { tv } from 'tailwind-variants';
-import { Checkbox } from './Checkbox';
+import { Checkbox } from './checkbox';
 import { composeTailwindRenderProps, focusRing } from './utils';
 
 export function Table(props: TableProps) {

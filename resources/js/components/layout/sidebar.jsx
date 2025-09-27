@@ -1,7 +1,10 @@
 import { createContext, use, useCallback, useEffect, useMemo, useState } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { twJoin, twMerge } from "tailwind-merge";
-import { Button } from "react-aria-components";
+import { Button } from "@/components/ui/button";
+import * as Lucide from "lucide-react";
+import { SheetContent } from "@/components/ui/sheet";
+import { Text } from "react-aria-components";
 
 const SIDEBAR_WIDTH = "17rem"
 const SIDEBAR_WIDTH_DOCK = "3.25rem"
@@ -96,8 +99,8 @@ const SidebarProvider = ({
                 }}
                 className={twMerge(
                     "@container **:data-[slot=icon]:shrink-0",
-                    "flex min-h-svh w-full text-sidebar-fg",
-                    "group/sidebar-root peer/sidebar-root has-data-[intent=inset]:bg-sidebar dark:has-data-[intent=inset]:bg-bg",
+                    "flex min-h-svh w-full text-sidebar-foreground",
+                    "group/sidebar-root peer/sidebar-root has-data-[intent=inset]:bg-sidebar dark:has-data-[intent=inset]:bg-background",
                     className
                 )}
                 ref={ref}
@@ -127,7 +130,7 @@ const Sidebar = ({
                 data-collapsible="none"
                 data-slot="sidebar"
                 className={twMerge(
-                    "flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-fg",
+                    "flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-foreground",
                     className
                 )}
                 {...props}
@@ -141,18 +144,18 @@ const Sidebar = ({
         return (
             <>
                 <span className="sr-only" aria-hidden data-intent={intent} />
-                {/* <SheetContent
+                <SheetContent
                     isOpen={isOpenOnMobile}
                     onOpenChange={setIsOpenOnMobile}
                     closeButton={closeButton}
                     aria-label="Sidebar"
                     data-slot="sidebar"
                     data-intent="default"
-                    className="w-(--sidebar-width) [--sidebar-width:18rem] has-data-[slot=calendar]:[--sidebar-width:23rem]"
+                    className="w-(--sidebar-width) [--sidebar-width:18rem] has-data-[slot=calendar]:[--sidebar-width:23rem] bg-background"
                     side={side}
                 >
                     {children}
-                </SheetContent> */}
+                </SheetContent>
             </>
         )
     }
@@ -164,7 +167,7 @@ const Sidebar = ({
             data-intent={intent}
             data-side={side}
             data-slot="sidebar"
-            className="group peer hidden text-sidebar-fg md:block"
+            className="group peer hidden text-sidebar-foreground md:block"
             {...props}
         >
             <div
@@ -194,9 +197,9 @@ const Sidebar = ({
                     side === "right" &&
                     "right-0 group-data-[collapsible=hidden]:right-[calc(var(--sidebar-width)*-1)]",
                     intent === "float" &&
-                    "bg-bg p-2 group-data-[collapsible=dock]:w-[calc(--spacing(4)+2px)]",
+                    "bg-background p-2 group-data-[collapsible=dock]:w-[calc(--spacing(4)+2px)]",
                     intent === "inset" &&
-                    "bg-sidebar group-data-[collapsible=dock]:w-[calc(var(--sidebar-width-dock)+--spacing(2)+2px)] dark:bg-bg",
+                    "bg-sidebar group-data-[collapsible=dock]:w-[calc(var(--sidebar-width-dock)+--spacing(2)+2px)] dark:bg-background",
                     intent === "default" && [
                         "group-data-[collapsible=dock]:w-(--sidebar-width-dock)",
                         "group-data-[side=left]:border-sidebar-border group-data-[side=right]:border-sidebar-border group-data-[side=left]:border-r group-data-[side=right]:border-l"
@@ -209,8 +212,8 @@ const Sidebar = ({
                     data-sidebar="default"
                     data-slot="sidebar-inner"
                     className={twJoin(
-                        "flex h-full w-full flex-col text-sidebar-fg",
-                        "group-data-[intent=inset]:bg-sidebar dark:group-data-[intent=inset]:bg-bg",
+                        "flex h-full w-full flex-col text-sidebar-foreground",
+                        "group-data-[intent=inset]:bg-sidebar dark:group-data-[intent=inset]:bg-background",
                         "group-data-[intent=float]:rounded-lg group-data-[intent=float]:border group-data-[intent=float]:border-sidebar-border group-data-[intent=float]:bg-sidebar group-data-[intent=float]:shadow-xs"
                     )}
                 >
@@ -243,7 +246,7 @@ const SidebarFooter = ({ className, ...props }) => {
         <div
             data-slot="sidebar-footer"
             className={twMerge([
-                "mt-auto flex shrink-0 items-center justify-center p-4 **:data-[slot=chevron]:text-muted-fg",
+                "mt-auto flex shrink-0 items-center justify-center p-4 **:data-[slot=chevron]:text-muted-foreground",
                 "in-data-[intent=inset]:px-6 in-data-[intent=inset]:py-4",
                 className
             ])}
@@ -274,7 +277,7 @@ const SidebarNav = ({ isSticky = false, className, ...props }) => {
         <nav
             data-slot="sidebar-nav"
             className={twMerge(
-                "isolate flex items-center justify-between gap-x-2 px-(--container-padding,--spacing(4)) py-2.5 text-navbar-fg sm:justify-start sm:px-(--gutter,--spacing(4)) md:w-full",
+                "isolate flex items-center justify-between gap-x-2 px-(--container-padding,--spacing(4)) py-2.5 text-foreground sm:justify-start sm:px-(--gutter,--spacing(4)) md:w-full",
                 isSticky &&
                 "static top-0 z-40 group-has-data-[intent=default]/sidebar-root:sticky",
                 className
@@ -289,9 +292,9 @@ const SidebarInset = ({ className, ref, ...props }) => {
         <main
             ref={ref}
             className={twMerge(
-                "relative flex w-full flex-1 flex-col bg-bg lg:min-w-0",
+                "relative flex w-full flex-1 flex-col bg-background lg:min-w-0",
                 "peer-data-[intent=inset]:border peer-data-[intent=inset]:border-sidebar-border md:peer-data-[intent=inset]:peer-data-[state=collapsed]:ml-2 md:peer-data-[intent=inset]:m-2 md:peer-data-[intent=inset]:ml-0 md:peer-data-[intent=inset]:rounded-2xl",
-                "peer-data-[intent=inset]:bg-bg dark:peer-data-[intent=inset]:bg-sidebar",
+                "peer-data-[intent=inset]:bg-background dark:peer-data-[intent=inset]:bg-sidebar",
                 className
             )}
             {...props}
@@ -306,22 +309,45 @@ const SidebarTrigger = ({ onPress, className, children, ...props }) => {
             aria-label={props["aria-label"] || "Toggle Sidebar"}
             data-slot="sidebar-trigger"
             intent={props.intent || "plain"}
-            size={props.size || "sq-sm"}
             className={twMerge(className, "shrink-0")}
             onPress={event => {
                 onPress?.(event)
                 toggleSidebar()
             }}
+            variant="icon"
             {...props}
         >
             {children || (
                 <>
-                    {'>'}
+                    <Lucide.Sidebar />
                     <span className="sr-only">Toggle Sidebar</span>
                 </>
             )}
         </Button>
     )
+}
+
+const SidebarLabel = ({ className, ref, ...props }) => {
+    const { state, isMobile } = useSidebar()
+    const collapsed = state === "collapsed" && !isMobile
+    if (!collapsed) {
+        return (
+            <Text
+                data-slot="sidebar-label"
+                tabIndex={-1}
+                ref={ref}
+                slot="label"
+                className={twMerge(
+                    "col-start-2 overflow-hidden whitespace-nowrap outline-hidden",
+                    className
+                )}
+                {...props}
+            >
+                {props.children}
+            </Text>
+        )
+    }
+    return null
 }
 
 export {
@@ -333,4 +359,6 @@ export {
     SidebarFooter,
     Sidebar,
     SidebarTrigger,
+    SidebarLabel,
+    useSidebar
 }

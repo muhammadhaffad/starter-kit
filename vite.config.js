@@ -7,12 +7,12 @@ import path from 'path';
 console.info(__dirname);
 export default defineConfig({
     plugins: [
-        tailwindcss(),
-        viteReact(),
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
         }),
+        viteReact(),
+        tailwindcss(),
     ],
     resolve: {
         alias: {
