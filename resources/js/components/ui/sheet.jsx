@@ -87,7 +87,8 @@ const SheetContent = ({
                 "fixed inset-0 z-50 h-(--visual-viewport-height,100vh) w-screen overflow-hidden bg-black/15",
                 "entering:fade-in-0 entering:animate-in entering:duration-500",
                 "exiting:fade-out-0 exiting:animate-out exiting:duration-300",
-                isBlurred && "backdrop-blur-sm backdrop-filter"
+                isBlurred && "backdrop-blur-sm backdrop-filter",
+                "group"
             )}
             {...props}
         >
