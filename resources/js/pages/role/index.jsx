@@ -8,17 +8,26 @@ import { Tag, TagGroup } from "@/components/ui/TagGroup";
 import { Edit3, Trash } from "lucide-react";
 import { useState } from "react";
 import { DialogTrigger, Group, TableBody, TagList } from "react-aria-components";
+import { useListData } from "react-stately";
 
 export default function Role({ roles }) {
     const [selectedKeys, setSelectedKeys] = useState(new Set([]));
     const [selectedItem, setSelectedItem] = useState(null);
-    let list = [];
-    let availableList = [
-        { id: 1, name: 'News' },
-        { id: 2, name: 'Travel' },
-        { id: 3, name: 'Gaming' },
-        { id: 4, name: 'Shopping' },
-    ];
+    const list = useListData({
+        initialItems: [],
+    });
+    const availableList = useListData({
+        initialItems: [
+            { id: 1, name: 'News' },
+            { id: 2, name: 'Travel' },
+            { id: 3, name: 'Gaming' },
+            { id: 4, name: 'Shopping' },
+        ]
+    });
+    let [fieldState, setFieldState] = useState({
+        selectedKey: null,
+        inputValue: '',
+    });
 
     return (
         <AppLayout>
@@ -72,17 +81,32 @@ export default function Role({ roles }) {
                 </div>
                 <div className="">
                     <Group>
-                        <TagGroup onRemove={() => { }}>
+                        <TagGroup onRemove={(keys) => {
+                            let key = keys.values().next().value;
+                            availableList.append(list.getItem(key));
+                            list.remove(key);
+                        }}>
                             <TagList items={list.items}>
-                                {(item) => <Tag>{item.name}</Tag>}
+                                {(item) => <Tag id={item.id}>{item.name}</Tag>}
                             </TagList>
                         </TagGroup>
-                        <ComboBox onSelectionChange={(key) => {
-                            
-                            const selectedList = new Set([...list.map((item) => item.id), key]);
-                            console.info(selectedList);
-                        }}>
-                            {availableList.map((item) => <ComboBoxItem id={item.id}>{item.name}</ComboBoxItem>)}
+                        <ComboBox
+                            items={availableList.items}
+                            onSelectionChange={(key) => {
+                                if (!availableList.getItem(key)) {
+                                    return;
+                                }
+                                list.append(availableList.getItem(key));
+                                availableList.remove(key);
+                            }}
+                            onInputChange={(value) => setFieldState((prevState) => ({
+                                inputValue: value,
+                                selectedKey: value === '' ? null : prevState.selectedKey,
+                            }))}
+                            selectedKey={fieldState.selectedKey}
+                            inputValue={fieldState.inputValue}
+                        >
+                            {(item) => <ComboBoxItem id={item.id}>{item.name}</ComboBoxItem>}
                         </ComboBox>
                         {/* <ComboBox
                             items={availableList.items}
