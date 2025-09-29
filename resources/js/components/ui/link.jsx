@@ -1,5 +1,6 @@
 import React from "react"
 import { Link as AriaLink, composeRenderProps } from "react-aria-components"
+import { Link as InertiaLink } from "@inertiajs/react"
 import { tv } from "tailwind-variants"
 import { focusRing } from "./utils"
 

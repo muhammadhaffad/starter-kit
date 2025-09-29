@@ -27,7 +27,7 @@ export function Breadcrumb(props) {
 			)}
 		>
 			<Link variant="secondary" {...props} />
-			{props.href && (
+			{props.href && props.href !== "#" && (
 				<ChevronRight className="w-3 h-3 text-gray-600 dark:text-zinc-400" />
 			)}
 		</AriaBreadcrumb>

@@ -251,7 +251,8 @@ const SidebarHeader = ({ className, ref, ...props }) => {
     )
 }
 
-const SidebarFooter = ({ className, ...props }) => {
+const SidebarFooter = ({ className, children, ...props }) => {
+    const { state } = useSidebar();
     return (
         <div
             data-slot="sidebar-footer"
@@ -261,7 +262,9 @@ const SidebarFooter = ({ className, ...props }) => {
                 className
             ])}
             {...props}
-        />
+        >
+            {typeof children === "function" ? children({ state }) : children}
+        </div>
     )
 }
 
@@ -304,7 +307,7 @@ const SidebarInset = ({ className, ref, ...props }) => {
             className={twMerge(
                 "relative flex w-full flex-1 flex-col bg-background lg:min-w-0",
                 "peer-data-[intent=inset]:border peer-data-[intent=inset]:border-sidebar-border md:peer-data-[intent=inset]:peer-data-[state=collapsed]:ml-2 md:peer-data-[intent=inset]:m-2 md:peer-data-[intent=inset]:ml-0 md:peer-data-[intent=inset]:rounded-2xl",
-                "peer-data-[intent=inset]:bg-background dark:peer-data-[intent=inset]:bg-sidebar",
+                "peer-data-[intent=inset]:bg-background dark:peer-data-[intent=inset]:bg-sidebar h-screen overflow-hidden",
                 className
             )}
             {...props}
@@ -419,7 +422,7 @@ const chevron = tv({
     }
 })
 
-function TreeItemContent({ children, icon, ...props }) {
+function TreeItemContent({ children, ...props }) {
     const { state, isMobile } = useSidebar();
     const collapsed = state === "collapsed" && !isMobile
     return (
@@ -435,15 +438,9 @@ function TreeItemContent({ children, icon, ...props }) {
                     {selectionMode === "multiple" && selectionBehavior === "toggle" && (
                         <Checkbox slot="selection" />
                     )}
-                    <div className="flex items-center">
+                    <div className="flex items-center w-full p-0">
                         <div className="shrink-0 group-data-[state=expanded]:w-[calc(calc(var(--tree-item-level)_-_1)_*_calc(var(--spacing)_*_3))]" />
-                        <div className="w-8 h-8 flex items-center justify-center">
-                            {icon}
-                        </div>
-                        {!collapsed && <>
-                            {hasChildItems || <div className="shrink-0 h-8" />}
-                            {children}
-                        </>}
+                        {typeof children === "function" ? children({ collapsed, hasChildItems }) : children}
                     </div>
                     {!collapsed && hasChildItems && (
                         <Button slot="chevron" variant="icon" className={expandButton({ isDisabled })}>
