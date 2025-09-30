@@ -19,6 +19,7 @@ export interface ComboBoxProps<T extends object> extends Omit<AriaComboBoxProps<
   description?: string | null;
   errorMessage?: string | ((validation: ValidationResult) => string);
   children: React.ReactNode | ((item: T) => React.ReactNode);
+  renderEmptyState?: (item: T) => React.ReactNode;
 }
 
 export function ComboBox<T extends object>(
@@ -36,7 +37,7 @@ export function ComboBox<T extends object>(
       {description && <Description>{description}</Description>}
       <FieldError>{errorMessage}</FieldError>
       <Popover className="w-(--trigger-width)">
-        <ListBox items={items} className="outline-0 p-1 max-h-[inherit] overflow-auto [clip-path:inset(0_0_0_0_round_.75rem)]">
+        <ListBox items={items} renderEmptyState={props.renderEmptyState} className="outline-0 p-1 max-h-[inherit] overflow-auto [clip-path:inset(0_0_0_0_round_.75rem)]">
           {children}
         </ListBox>
       </Popover>

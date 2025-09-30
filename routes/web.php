@@ -52,9 +52,9 @@ Route::prefix('permissions')->group(function () {
 })->middleware('auth');
 Route::prefix('roles')->group(function () {
     Route::get('/', [App\Http\Controllers\RoleController::class, 'index'])->name('roles.index');
-    // Route::post('/', [App\Http\Controllers\RoleController::class, 'createRole'])->name('roles.create');
-    // Route::put('/{id}', [App\Http\Controllers\RoleController::class, 'updateRole'])->name('roles.update');
-    // Route::delete('/{id}', [App\Http\Controllers\RoleController::class, 'deleteRole'])->name('roles.delete');
+    Route::post('/', [App\Http\Controllers\RoleController::class, 'createRole'])->name('roles.create');
+    Route::put('/{id}', [App\Http\Controllers\RoleController::class, 'updateRole'])->name('roles.update');
+    Route::delete('/{id}', [App\Http\Controllers\RoleController::class, 'deleteRole'])->name('roles.delete');
 })->middleware('auth');
 Route::get('/menus', function () {
     return Inertia::render('test');
