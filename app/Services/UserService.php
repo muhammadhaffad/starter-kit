@@ -29,13 +29,15 @@ class UserService
         ]);
     }
 
-    public function deactivate($idUser, $request)
+    public function deactivate($idUser, $request, $needLogout = true)
     {
         $user = Models\User::find($idUser);
         $user->delete();
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        if ($needLogout) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
     }
 
     public function reactivate($idUser)

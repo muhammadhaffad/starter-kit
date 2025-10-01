@@ -47,6 +47,7 @@ class UserController extends Controller
         Inertia::share('menuActive', \App\Models\Menu::where('route', 'users.index')->first()->id);
         return Inertia::render('user/detail/index', [
             'user' => $this->userService->getUserById($idUser),
+            'roles' => \App\Models\Role::all(),
         ]);
     }
 
@@ -123,7 +124,7 @@ class UserController extends Controller
     public function deactivateUser(Request $request, $idUser)
     {
         try {
-            $this->userService->deactivate($idUser, $request);
+            $this->userService->deactivate($idUser, $request, false);
             return redirect()->back()->with('success', 'User deactivated successfully');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());

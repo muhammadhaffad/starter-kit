@@ -43,7 +43,12 @@ Route::prefix('/account-settings')->middleware('auth')->group(function () {
 
 Route::prefix('/users')->group(function () {
     Route::get('/', [App\Http\Controllers\UserController::class, 'index'])->name('users.index');
-    Route::get('/{idUser}', [App\Http\Controllers\UserController::class, 'detailUser'])->name('users.detail');
+    Route::get('/detail/{idUser}', [App\Http\Controllers\UserController::class, 'detailUser'])->name('users.detail');
+    Route::put('/detail/{idUser}', [App\Http\Controllers\UserController::class, 'updateUserProfile'])->name('users.detail.update-profile');
+    Route::put('/detail/{idUser}/change-password', [App\Http\Controllers\UserController::class, 'updateUserPassword'])->name('users.detail.change-password');
+    Route::put('/detail/{idUser}/change-role', [App\Http\Controllers\UserController::class, 'changeRole'])->name('users.detail.change-role');
+    Route::put('/detail/{idUser}/deactivate', [App\Http\Controllers\UserController::class, 'deactivateUser'])->name('users.detail.deactivate');
+    Route::put('/detail/{idUser}/reactivate', [App\Http\Controllers\UserController::class, 'reactivateUser'])->name('users.detail.reactivate');
 })->middleware('auth');
 Route::prefix('permissions')->group(function () {
     Route::get('/', [App\Http\Controllers\PermissionController::class, 'index'])->name('permissions.index');
