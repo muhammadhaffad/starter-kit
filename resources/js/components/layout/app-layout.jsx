@@ -10,7 +10,8 @@ import { useRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 export default function AppLayout({ children }) {
-    const { user, breadcrumbs, menus, menusFlatten, menuActive, menuExpanded } = usePage().props;
+    const { user, breadcrumbs, menus, menusFlatten, menuActive } = usePage().props;
+    const menuExpanded = JSON.parse(menusFlatten.find(menu => menu.id == menuActive).path_order.replace('{', '[').replace('}', ']'));
     const logoutRef = useRef();
     return (
         <RootWrapper>

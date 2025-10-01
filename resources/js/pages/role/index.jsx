@@ -18,54 +18,12 @@ import { useListData } from "react-stately";
 export default function Role({ roles, permissions }) {
     const [selectedKeys, setSelectedKeys] = useState(new Set([]));
     const [selectedItem, setSelectedItem] = useState(null);
-    const items = permissions.map((permission) => {
-        return ({ id: permission.id, name: permission.name })
-    });
-    const selectedItems = [];
+    const [resetKey, setResetKey] = useState(0);
 
-    const { data, setData, post, put, delete: deleteRole, processing, errors } = useForm({
-        name: "",
-        description: "",
-        permissions: []
-    });
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (selectedItem?.id) {
-            put(route('roles.update', selectedItem.id), {
-                onSuccess: () => {
-                    e.target.reset();
-                    setData({
-                        name: "",
-                        description: "",
-                        permissions: []
-                    });
-                }
-            });
-        } else {
-            post(route('roles.create'), {
-                onSuccess: () => {
-                    e.target.reset();
-                    setData({
-                        name: "",
-                        description: "",
-                        permissions: []
-                    });
-                }
-            });
-        }
+    const handleReset = () => {
+        setSelectedItem(null);
+        setResetKey((prev) => prev + 1);
     }
-
-
-    useEffect(() => {
-        if (selectedItem) {
-            setData({
-                name: selectedItem.name,
-                description: selectedItem.description,
-                permissions: selectedItem.permissions
-            });
-        }
-    }, [selectedItem]);
 
     return (
         <AppLayout>
@@ -80,14 +38,16 @@ export default function Role({ roles, permissions }) {
                         }
                     }}>
                         <TableHeader className="w-full h-8">
-                            <Column width={100} isRowHeader>Name</Column>
+                            <Column width={100} isRowHeader>Role</Column>
+                            <Column width={100} isRowHeader>Description</Column>
                             <Column width={'auto'}>Permissions</Column>
                             <Column width={100}>Action</Column>
                         </TableHeader>
                         <TableBody>
                             {roles.map((role) => {
-                                return (<Row style={{ verticalAlign: 'top' }} id={role.id.toString()}>
+                                return (<Row style={{ verticalAlign: 'top' }} key={role.id.toString()}>
                                     <Cell>{role.name}</Cell>
+                                    <Cell>{role.description}</Cell>
                                     <Cell>
                                         <TagGroup>
                                             {role.permissions.map((permission) => {
@@ -105,8 +65,8 @@ export default function Role({ roles, permissions }) {
                                                     <Trash size={16} />
                                                 </Button>
                                                 <Modal>
-                                                    <AlertDialog actionLabel="Delete" title="Delete Role" variant="destructive" className="p-6" onAction={() => deleteRole(router.delete(route('roles.delete', role.id)))}>
-                                                        <p>Are you sure you want to delete this role?</p>
+                                                    <AlertDialog actionLabel="Delete" title="Delete Role" variant="destructive" className="p-6" onAction={() => router.delete(route('roles.delete', role.id))}>
+                                                        Are you sure you want to delete this role?
                                                     </AlertDialog>
                                                 </Modal>
                                             </DialogTrigger>
@@ -118,29 +78,67 @@ export default function Role({ roles, permissions }) {
                     </Table>
                 </div>
                 <div className="max-w-sm">
-                    <Form key={selectedItem?.id} validationErrors={errors} onSubmit={handleSubmit} >
-                        <div className="grid grid-cols-1 gap-2">
-                            <input type="hidden" name="id" defaultValue={selectedItem?.id} />
-                            <TextField name="name" type="text" defaultValue={selectedItem?.name} onChange={(value) => setData('name', value)} className="w-full" placeholder="Role" label={'Role'} />
-                            <TextField name="description" type="text" defaultValue={selectedItem?.description} onChange={(value) => setData('description', value)} className="w-full" placeholder="Description" label={'Description'} />
-                            <MultiComboBox
-                                items={items}
-                                selectedItems={selectedItem?.permissions.map((permission) => ({
-                                    id: permission.id, name: permission.name
-                                }))}
-                                isRequired={true}
-                                name="permissions"
-                                placeholder="Select permissions"
-                                label={'Permissions'}
-                                onSelectionChange={(keys) => setData('permissions', keys.map((key) => key.id))}
-                            />
-                            <Button type="submit" className="w-full">Submit</Button>
-                        </div>
-                    </Form>
+                    <RoleForm key={selectedItem ? selectedItem.id : `new-${resetKey}`} permissions={permissions} selectedItem={selectedItem} handleReset={handleReset} />
                 </div>
             </div>
         </AppLayout>
     )
+}
+
+function RoleForm({ permissions, selectedItem, handleReset }) {
+    const { data, setData, post, put, processing, errors } = useForm({
+        name: selectedItem?.name || null,
+        description: selectedItem?.description || null,
+        permissions: selectedItem?.permissions?.map((permission) => permission.id) || []
+    });
+
+    
+    const permissionOptions = permissions.map((permission) => {
+        return ({ id: permission.id, name: permission.name })
+    });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (selectedItem?.id) {
+            put(route('roles.update', selectedItem.id), {
+                onSuccess: () => {
+                    handleReset();
+                }
+            });
+        } else {
+            post(route('roles.create'), {
+                onSuccess: () => {
+                    handleReset();
+                }
+            });
+        }
+    }
+
+    return (
+        <Form validationErrors={errors} onSubmit={handleSubmit} >
+            <h2 className="text-lg font-semibold">{selectedItem?.id ? `Edit ${selectedItem.name} Role` : 'Add Role'}</h2>
+            <div className="grid grid-cols-1 gap-2">
+                <input type="hidden" name="id" defaultValue={selectedItem?.id} />
+                <TextField name="name" type="text" defaultValue={selectedItem?.name} onChange={(value) => setData('name', value)} className="w-full" placeholder="Role" label={'Role'} />
+                <TextField name="description" type="text" defaultValue={selectedItem?.description} onChange={(value) => setData('description', value)} className="w-full" placeholder="Description" label={'Description'} />
+                <MultiComboBox
+                    items={permissionOptions}
+                    selectedItems={selectedItem?.permissions.map((permission) => ({
+                        id: permission.id, name: permission.name
+                    })) || []}
+                    isRequired={true}
+                    name="permissions"
+                    placeholder="Select permissions"
+                    label={'Permissions'}
+                    onSelectionChange={(keys) => setData('permissions', keys.map((key) => key.id))}
+                />
+                <div className="flex gap-2 w-min ms-auto">
+                    <Button variant="secondary" onPress={handleReset} className="w-full">Reset</Button>
+                    <Button type="submit" className="w-full" isDisabled={processing}>Save</Button>
+                </div>
+            </div>
+        </Form>
+    );
 }
 
 function MultiComboBox({ items, selectedItems, isRequired = false, name = '', onSelectionChange, ...props }) {
@@ -160,7 +158,7 @@ function MultiComboBox({ items, selectedItems, isRequired = false, name = '', on
         initialItems: selectedItems,
     });
     const availableList = useListData({
-        initialItems: items.filter((item) => !list.items.includes(item.id)),
+        initialItems: items.filter((item) => !list.items.map((item) => item.id).includes(item.id)),
     });
 
     const handleOnSelectionChange = (key) => {
@@ -215,7 +213,7 @@ function MultiComboBox({ items, selectedItems, isRequired = false, name = '', on
             </ComboBox>
             {list.items.length > 0 && <TagGroup onRemove={handleOnRemove}>
                 <TagList items={list.items}>
-                    {(item) => <Tag id={item.id}>{item.name}</Tag>}
+                    {(item) => <Tag>{item.name}</Tag>}
                 </TagList>
             </TagGroup>}
         </Group>

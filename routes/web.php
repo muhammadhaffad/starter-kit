@@ -41,9 +41,10 @@ Route::prefix('/account-settings')->middleware('auth')->group(function () {
     Route::post('/deactivate', [App\Http\Controllers\UserController::class, 'deactivate'])->name('account-settings.deactivate');
 });
 
-Route::get('/users', function () {
-    return Inertia::render('test');
-})->middleware('auth')->name('users.index');
+Route::prefix('/users')->group(function () {
+    Route::get('/', [App\Http\Controllers\UserController::class, 'index'])->name('users.index');
+    Route::get('/{idUser}', [App\Http\Controllers\UserController::class, 'detailUser'])->name('users.detail');
+})->middleware('auth');
 Route::prefix('permissions')->group(function () {
     Route::get('/', [App\Http\Controllers\PermissionController::class, 'index'])->name('permissions.index');
     Route::post('/', [App\Http\Controllers\PermissionController::class, 'createPermission'])->name('permissions.create');

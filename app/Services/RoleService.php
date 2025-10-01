@@ -8,7 +8,7 @@ class RoleService
 {
     public function getAllRole()
     {
-        return App\Models\Role::with('permissions')->get();
+        return App\Models\Role::with('permissions')->orderBy('id', 'asc')->get();
     }
 
     public function createRole($data)

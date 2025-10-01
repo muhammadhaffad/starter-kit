@@ -47,7 +47,7 @@ class HandleInertiaRequests extends Middleware
         $menus = \App\Models\Menu::hydrate(DB::select($menuQuery));
         $menuActive = $menus->where('route', $request->route()->getName())->first();
         $menuExpanded = json_decode(str_replace(['{', '}'], ['[', ']'], $menuActive?->path_order));
-        return array_merge(parent::share($request), [
+        return array_merge([
             'currentPath' => $request->path(),
             'user' => auth()->user() ?? null,
             'flash' => [
@@ -59,7 +59,7 @@ class HandleInertiaRequests extends Middleware
             'menusFlatten' => $menus,
             'menuExpanded' => $menuExpanded,
             'menuActive' => $menuActive?->id
-        ]);
+        ], parent::share($request));
     }
 
     public function buildTree($menus, $parentId = null) {
