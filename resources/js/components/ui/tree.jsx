@@ -92,9 +92,9 @@ export function TreeItemContent({ children, ...props }) {
 							/>
 						</Button>
 					) : (
-						<div className="shrink-0 w-8 h-8" />
+						<div className="shrink-0 h-8" />
 					)}
-					{children}
+					{typeof children === "function" ? children({ hasChildItems }) : children}
 				</div>
 			)}
 		</AriaTreeItemContent>
