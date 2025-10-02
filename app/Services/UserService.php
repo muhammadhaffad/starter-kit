@@ -1,18 +1,40 @@
 <?php
 namespace App\Services;
 use App\Models;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
-    public function getAllUser()
+    public function getAllUser(Request $request)
     {
-        return Models\User::withTrashed()->with('roles')->get();
+        $perPage = (int) $request->get('perPage', 10);
+
+        // hitung total data
+        $users = Models\User::withTrashed()->where(function ($query) use ($request) {
+            if ($request->has('search')) {
+                $query->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('email', 'like', '%' . $request->search . '%');
+            }
+        })->with('roles')->paginate($perPage)->withQueryString();
+        return $users;
     }
 
     public function getUserById($idUser)
     {
         return Models\User::withTrashed()->with('roles')->find($idUser);
+    }
+
+    public function storeUser($data)
+    {
+        $user = Models\User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
+        $user->roles()->sync($data['role']);
+        return $user;
     }
 
     public function updateProfile($data, $idUser)

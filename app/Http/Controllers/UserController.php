@@ -24,15 +24,16 @@ class UserController extends Controller
         return Inertia::render('settings');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         Breadcrumbs::for('users', function($trail) {
             $trail->push('Home', route('dashboard.index'));
             $trail->push('Users', '/users');
         });
         Inertia::share('breadcrumbs', Breadcrumbs::generate('users')->toArray());
+        $users = $this->userService->getAllUser($request);
         return Inertia::render('user/index', [
-            'users' => $this->userService->getAllUser(),
+            'users' => $users,
         ]);
     }
 
@@ -51,6 +52,32 @@ class UserController extends Controller
         ]);
     }
 
+    public function createUser(Request $request)
+    {
+        Breadcrumbs::for('user-create', function($trail) {
+            $trail->push('Home', route('dashboard.index'));
+            $trail->push('Users', route('users.index'));
+            $trail->push('Create User', route('users.create'));
+        });
+        Inertia::share('breadcrumbs', Breadcrumbs::generate('user-create')->toArray());
+        Inertia::share('menuActive', \App\Models\Menu::where('route', 'users.index')->first()->id);
+        return Inertia::render('user/create/index', [
+            'roles' => \App\Models\Role::all(),
+        ]);
+    }
+
+    public function storeUser(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|exists:roles,id',
+        ]);
+        $this->userService->storeUser($request->all());
+        return redirect()->route('users.index')->with('success', 'User created successfully');
+    }
+    
     public function updateProfile(Request $request)
     {
         $request->validate([

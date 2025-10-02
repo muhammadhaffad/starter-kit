@@ -43,6 +43,8 @@ Route::prefix('/account-settings')->middleware('auth')->group(function () {
 
 Route::prefix('/users')->group(function () {
     Route::get('/', [App\Http\Controllers\UserController::class, 'index'])->name('users.index');
+    Route::get('/create', [App\Http\Controllers\UserController::class, 'createUser'])->name('users.create');
+    Route::post('/store', [App\Http\Controllers\UserController::class, 'storeUser'])->name('users.store');
     Route::get('/detail/{idUser}', [App\Http\Controllers\UserController::class, 'detailUser'])->name('users.detail');
     Route::put('/detail/{idUser}', [App\Http\Controllers\UserController::class, 'updateUserProfile'])->name('users.detail.update-profile');
     Route::put('/detail/{idUser}/change-password', [App\Http\Controllers\UserController::class, 'updateUserPassword'])->name('users.detail.change-password');
@@ -62,9 +64,9 @@ Route::prefix('roles')->group(function () {
     Route::put('/{id}', [App\Http\Controllers\RoleController::class, 'updateRole'])->name('roles.update');
     Route::delete('/{id}', [App\Http\Controllers\RoleController::class, 'deleteRole'])->name('roles.delete');
 })->middleware('auth');
-Route::get('/menus', function () {
-    return Inertia::render('test');
-})->middleware('auth')->name('menus.index');
+Route::prefix('menus')->group(function () {
+    Route::get('/', [App\Http\Controllers\MenuController::class, 'index'])->middleware('auth')->name('menus.index');
+});
 Route::get('/test-a', function () {
     return Inertia::render('test');
 })->middleware('auth')->name('test-a.index');
