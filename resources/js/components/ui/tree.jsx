@@ -9,11 +9,12 @@ import { ChevronRight } from "lucide-react"
 import { tv } from "tailwind-variants"
 import { Checkbox } from "./checkbox"
 import { composeTailwindRenderProps, focusRing } from "./utils"
+import { twMerge } from "tailwind-merge"
 
 const itemStyles = tv({
 	extend: focusRing,
 	base:
-		"relative flex group gap-3 cursor-default select-none py-2 px-3 text-sm text-gray-900 dark:text-zinc-200 border-y dark:border-y-zinc-700 border-transparent first:border-t-0 last:border-b-0 -mb-px last:mb-0 -outline-offset-2",
+		"relative flex group gap-3 cursor-default select-none py-2 px-3 text-sm text-gray-900 dark:text-zinc-200 border-y dark:border-y-zinc-700 border-transparent first:border-t-0 last:border-b-0 -mb-px last:mb-0 -outline-offset-2 data-[dragging]:opacity-50 data-[drop-target]:outline-2 data-[drop-target]:bg-blue-500/20",
 	variants: {
 		isSelected: {
 			false: "hover:bg-gray-100 dark:hover:bg-zinc-700/60",
@@ -33,7 +34,7 @@ export function Tree({ children, ...props }) {
 			{...props}
 			className={composeTailwindRenderProps(
 				props.className,
-				"overflow-auto relative border border-gray-200 dark:border-zinc-600 rounded-lg"
+				"overflow-auto relative border border-gray-200 dark:border-zinc-600 rounded-lg data-[selection-mode=multiple]:[--checkbox-width:28px] data-[allows-dragging]:[--drag-button-width:23px] [&_.react-aria-DropIndicator]:outline-2 [&_.react-aria-DropIndicator]:outline-blue-500  [&_.react-aria-DropIndicator[data-drop-target]]:ml-[calc(8px+var(--checkbox-width,0px)+var(--drag-button-width,0px)+26px+(var(--tree-item-level)-1)*16px)]"
 			)}
 		>
 			{children}
@@ -79,7 +80,7 @@ export function TreeItemContent({ children, ...props }) {
 				isExpanded,
 				isDisabled
 			}) => (
-				<div className={`flex items-center`}>
+				<div className={twMerge(`flex items-center`, props.className)}>
 					{selectionMode === "multiple" && selectionBehavior === "toggle" && (
 						<Checkbox slot="selection" />
 					)}
@@ -92,7 +93,7 @@ export function TreeItemContent({ children, ...props }) {
 							/>
 						</Button>
 					) : (
-						<div className="shrink-0 h-8" />
+						<div className="shrink-0 h-8 w-8" />
 					)}
 					{typeof children === "function" ? children({ hasChildItems }) : children}
 				</div>

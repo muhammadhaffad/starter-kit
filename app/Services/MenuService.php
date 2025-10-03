@@ -1,24 +1,18 @@
 <?php
-
-namespace App\Http\Controllers;
+namespace App\Services;
 
 use App;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
-class MenuController extends Controller
+class MenuService
 {
-    protected $menuService;
-    public function __construct()
-    {
-        $this->menuService = new App\Services\MenuService();
+    public function getMenus() {
+        $query = "SELECT DISTINCT mt.*
+            FROM menu_tree mt
+            ORDER BY mt.path_order";
+        $menus = App\Models\Menu::with('permissions')->hydrate(DB::select($query));
+        return $this->buildTree($menus);
     }
-    public function index()
-    {
-        $menus = $this->menuService->getMenus();
-        return Inertia::render('menu/index', compact('menus'));
-    }
-
     public function buildTree($menus, $parentId = null) {
         $branch = [];
         foreach ($menus as $menu) {
@@ -31,7 +25,8 @@ class MenuController extends Controller
                     'type' => $children ? 'folder' : 'file',
                     'icon' => $menu->icon,
                     'route' => $menu->route,
-                    'children' => $children
+                    'children' => $children,
+                    'permissions' => $menu->permissions->toArray()
                 ];
             }
         }
