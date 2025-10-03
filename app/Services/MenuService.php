@@ -13,6 +13,11 @@ class MenuService
         $menus = App\Models\Menu::with('permissions')->hydrate(DB::select($query));
         return $this->buildTree($menus);
     }
+
+    public function updateMenus($menus) {
+           
+    }
+
     public function buildTree($menus, $parentId = null) {
         $branch = [];
         foreach ($menus as $menu) {

@@ -9,6 +9,9 @@ export default function Menu({ menus }) {
     let treeMenu = useTreeData({
         initialItems: menus
     });
+
+    console.info(flattenMenus(treeMenu.items));
+
     let { dragAndDropHooks } = useDragAndDrop({
         getItems: (keys) =>
             [...keys].map((key) => ({
@@ -34,6 +37,7 @@ export default function Menu({ menus }) {
             }
         }
     });
+
     return (
         <AppLayout>
             <div className="flex flex-col gap-6">
@@ -71,4 +75,33 @@ export default function Menu({ menus }) {
             </div>
         </AppLayout>
     );
+}
+
+function flattenMenus(tree) {
+    const result = [];
+
+    function traverse(nodes, parentId = null) {
+        nodes.forEach((node, index) => {
+            const { value, children } = node;
+            const flatItem = {
+                id: Number(value.id),
+                parent_id: parentId ? Number(parentId) : null,
+                order_index: index + 1,
+                title: value.title,
+                type: value.type,
+                icon: value.icon,
+                route: value.route,
+                permissions: value.permissions || []
+            };
+
+            result.push(flatItem);
+
+            if (children && children.length > 0) {
+                traverse(children, value.id);
+            }
+        });
+    }
+
+    traverse(tree, null);
+    return result;
 }
