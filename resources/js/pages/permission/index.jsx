@@ -3,13 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Cell, Column, Row, Table, TableHeader } from "@/components/ui/table";
 import { TextField } from "@/components/ui/text-field";
-import { Edit3, Plus, Trash } from "lucide-react";
+import { Edit3, Plus, Trash, Trash2 } from "lucide-react";
 import { DialogTrigger, ResizableTableContainer, TableBody } from "react-aria-components";
 import { useForm } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 import { AlertDialog } from "@/components/ui/AlertDialog";
 import { Modal } from "@/components/ui/modal";
 import { Input } from "@/components/ui/field";
+import AppHead from "@/components/layout/app-head";
 
 export default function Permission({ permissions }) {
     const [selectedKeys, setSelectedKeys] = useState(new Set([]));
@@ -48,8 +49,9 @@ export default function Permission({ permissions }) {
 
     return (
         <AppLayout>
-            <div className="flex flex-col gap-6 max-w-xl">
-                <div className="flex justify-between">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <AppHead title="Permissions" />
+                <div className="col-span-full flex justify-between">
                     <h1 className="text-xl font-bold">Permission</h1>
                     {selectedKeys.size > 0 && (
                         <DialogTrigger>
@@ -70,7 +72,7 @@ export default function Permission({ permissions }) {
                         </DialogTrigger>
                     )}
                 </div>
-                <div className="overflow-auto">
+                <div className="overflow-auto md:col-span-2">
                     <Table className="w-full" aria-label="Files" width="100%" selectionMode="multiple" selectionKeys={selectedKeys} onSelectionChange={(keys) => {
                         if (keys == 'all') {
                             setSelectedKeys(new Set(permissions.map((permission) => permission.id)))
@@ -89,13 +91,13 @@ export default function Permission({ permissions }) {
                                     <Cell>{permission.name}</Cell>
                                     <Cell>{permission.description}</Cell>
                                     <Cell>
-                                        <div className="flex gap-1">
-                                            <Button className="flex w-min items-center gap-2 p-2 ms-auto" onPress={() => setSelectedItem(permission)}>
-                                                <Edit3 size={16} />
+                                        <div className="flex gap-1 justify-end">
+                                            <Button variant="icon" className="flex w-min items-center" onPress={() => setSelectedItem(permission)}>
+                                                <Edit3 size={16} className="text-yellow-500" />
                                             </Button>
                                             <DialogTrigger>
-                                                <Button variant="destructive" className="flex w-min items-center gap-2 p-2 ms-auto" onPress={() => setSelectedItem(permission)}>
-                                                    <Trash size={16} />
+                                                <Button variant="icon" className="flex w-min items-center" onPress={() => setSelectedItem(permission)}>
+                                                    <Trash2 size={16} className="text-red-500" />
                                                 </Button>
                                                 <Modal>
                                                     <AlertDialog onAction={() => deletePermission(route('permissions.delete', selectedItem.id), {

@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/Switch";
 import { router, useForm } from "@inertiajs/react";
 import { SearchField } from "@/components/ui/SearchField";
 import { Form } from "@/components/ui/form";
+import AppHead from "@/components/layout/app-head";
 
 export default function User({ users }) {
     const { data, setData, get } = useForm({
@@ -23,6 +24,7 @@ export default function User({ users }) {
     return (
         <AppLayout>
             <div className="flex flex-col gap-6">
+                <AppHead title="Users" />
                 <div className="flex gap-2 items-baseline">
                     <h1 className="text-xl font-bold">Users</h1>
                     /

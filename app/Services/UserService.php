@@ -17,7 +17,7 @@ class UserService
                 $query->where('name', 'like', '%' . $request->search . '%')
                     ->orWhere('email', 'like', '%' . $request->search . '%');
             }
-        })->with('roles')->paginate($perPage)->withQueryString();
+        })->orderBy('id', 'desc')->with('roles')->paginate($perPage)->withQueryString();
         return $users;
     }
 

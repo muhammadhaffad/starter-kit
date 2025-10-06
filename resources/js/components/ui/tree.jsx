@@ -5,7 +5,7 @@ import {
 	TreeItemContent as AriaTreeItemContent,
 	Button
 } from "react-aria-components"
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, GripVertical } from "lucide-react"
 import { tv } from "tailwind-variants"
 import { Checkbox } from "./checkbox"
 import { composeTailwindRenderProps, focusRing } from "./utils"
@@ -14,7 +14,7 @@ import { twMerge } from "tailwind-merge"
 const itemStyles = tv({
 	extend: focusRing,
 	base:
-		"relative flex group gap-3 cursor-default select-none py-2 px-3 text-sm text-gray-900 dark:text-zinc-200 border-y dark:border-y-zinc-700 border-transparent first:border-t-0 last:border-b-0 -mb-px last:mb-0 -outline-offset-2 data-[dragging]:opacity-50 data-[drop-target]:outline-2 data-[drop-target]:bg-blue-500/20",
+		"relative flex group gap-3 cursor-default select-none py-2 px-3 text-sm text-gray-900 dark:text-zinc-200 border-y dark:border-y-zinc-700 border-transparent first:border-t-0 last:border-b-0 -mb-px last:mb-0 -outline-offset-2 data-[dragging]:opacity-50 data-[drop-target]:outline-2 data-[drop-target]:bg-blue-500/20 min-w-md",
 	variants: {
 		isSelected: {
 			false: "hover:bg-gray-100 dark:hover:bg-zinc-700/60",
@@ -78,12 +78,19 @@ export function TreeItemContent({ children, ...props }) {
 				selectionBehavior,
 				hasChildItems,
 				isExpanded,
-				isDisabled
+				isDisabled,
+				allowsDragging
 			}) => (
 				<div className={twMerge(`flex items-center`, props.className)}>
 					{selectionMode === "multiple" && selectionBehavior === "toggle" && (
 						<Checkbox slot="selection" />
 					)}
+					{allowsDragging && (
+						<Button slot="drag">
+							<GripVertical size={18} />
+						</Button>
+					)}
+
 					<div className="shrink-0 w-[calc(calc(var(--tree-item-level)_-_1)_*_calc(var(--spacing)_*_3))]" />
 					{hasChildItems ? (
 						<Button slot="chevron" className={expandButton({ isDisabled })}>

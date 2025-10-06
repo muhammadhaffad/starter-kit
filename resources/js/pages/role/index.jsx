@@ -1,3 +1,4 @@
+import AppHead from "@/components/layout/app-head";
 import AppLayout from "@/components/layout/app-layout";
 import { AlertDialog } from "@/components/ui/AlertDialog";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ import { TextField } from "@/components/ui/text-field";
 import { router, useForm } from "@inertiajs/react";
 import { useFormValidation } from "@react-aria/form";
 import { useFormValidationState } from "@react-stately/form";
-import { Edit3, Trash } from "lucide-react";
+import { Edit3, Trash, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { DialogTrigger, FormContext, Group, TableBody, TagList, useSlottedContext } from "react-aria-components";
 import { useListData } from "react-stately";
@@ -27,10 +28,11 @@ export default function Role({ roles, permissions }) {
 
     return (
         <AppLayout>
-            <div className="flex flex-col gap-6 w-full">
-                <h1 className="text-xl font-bold">Role</h1>
-                <div className="overflow-auto">
-                    <Table className="w-full" aria-label="Files" width="100%" selectionKeys={selectedKeys} onSelectionChange={(keys) => {
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+                <AppHead title="Roles" />
+                <h1 className="text-xl font-bold col-span-full">Role</h1>
+                <div className="overflow-auto md:col-span-2">
+                    <Table className="w-full max-h-full" aria-label="Files" width="100%" selectionKeys={selectedKeys} onSelectionChange={(keys) => {
                         if (keys == 'all') {
                             setSelectedKeys(new Set(roles.map((role) => role.id)))
                         } else {
@@ -40,7 +42,7 @@ export default function Role({ roles, permissions }) {
                         <TableHeader className="w-full h-8">
                             <Column width={100} isRowHeader>Role</Column>
                             <Column width={100} isRowHeader>Description</Column>
-                            <Column width={'auto'}>Permissions</Column>
+                            <Column minWidth={200}>Permissions</Column>
                             <Column width={100}>Action</Column>
                         </TableHeader>
                         <TableBody>
@@ -56,13 +58,13 @@ export default function Role({ roles, permissions }) {
                                         </TagGroup>
                                     </Cell>
                                     <Cell>
-                                        <div className="flex gap-1">
-                                            <Button className="flex w-min items-center gap-2 p-2 ms-auto" onPress={() => setSelectedItem(role)}>
-                                                <Edit3 size={16} />
+                                        <div className="flex gap-1 justify-end">
+                                            <Button variant="icon" className="flex w-min items-center " onPress={() => setSelectedItem(role)}>
+                                                <Edit3 size={16} className="text-yellow-500" />
                                             </Button>
                                             <DialogTrigger>
-                                                <Button variant="destructive" className="flex w-min items-center gap-2 p-2 ms-auto">
-                                                    <Trash size={16} />
+                                                <Button variant="icon" className="flex w-min items-center ">
+                                                    <Trash2 size={16} className="text-red-500" />
                                                 </Button>
                                                 <Modal>
                                                     <AlertDialog actionLabel="Delete" title="Delete Role" variant="destructive" className="p-6" onAction={() => router.delete(route('roles.delete', role.id))}>
@@ -77,9 +79,7 @@ export default function Role({ roles, permissions }) {
                         </TableBody>
                     </Table>
                 </div>
-                <div className="max-w-sm">
-                    <RoleForm key={selectedItem ? selectedItem.id : `new-${resetKey}`} permissions={permissions} selectedItem={selectedItem} handleReset={handleReset} />
-                </div>
+                <RoleForm key={selectedItem ? selectedItem.id : `new-${resetKey}`} permissions={permissions} selectedItem={selectedItem} handleReset={handleReset} />
             </div>
         </AppLayout>
     )
@@ -115,29 +115,31 @@ function RoleForm({ permissions, selectedItem, handleReset }) {
     }
 
     return (
-        <Form validationErrors={errors} onSubmit={handleSubmit} >
-            <h2 className="text-lg font-semibold">{selectedItem?.id ? `Edit ${selectedItem.name} Role` : 'Add Role'}</h2>
-            <div className="grid grid-cols-1 gap-2">
-                <input type="hidden" name="id" defaultValue={selectedItem?.id} />
-                <TextField name="name" type="text" defaultValue={selectedItem?.name} onChange={(value) => setData('name', value)} className="w-full" placeholder="Role" label={'Role'} />
-                <TextField name="description" type="text" defaultValue={selectedItem?.description} onChange={(value) => setData('description', value)} className="w-full" placeholder="Description" label={'Description'} />
-                <MultiComboBox
-                    items={permissionOptions}
-                    selectedItems={selectedItem?.permissions.map((permission) => ({
-                        id: permission.id, name: permission.name
-                    })) || []}
-                    isRequired={true}
-                    name="permissions"
-                    placeholder="Select permissions"
-                    label={'Permissions'}
-                    onSelectionChange={(keys) => setData('permissions', keys.map((key) => key.id))}
-                />
-                <div className="flex gap-2 w-min ms-auto">
-                    <Button variant="secondary" onPress={handleReset} className="w-full">Reset</Button>
-                    <Button type="submit" className="w-full" isDisabled={processing}>Save</Button>
+        <div className="flex flex-col gap-4 p-4 border rounded-xl md:col-span-1">
+            <Form validationErrors={errors} onSubmit={handleSubmit} >
+                <h2 className="text-lg font-semibold">{selectedItem?.id ? `Edit ${selectedItem.name} Role` : 'Add Role'}</h2>
+                <div className="grid grid-cols-1 gap-2">
+                    <input type="hidden" name="id" defaultValue={selectedItem?.id} />
+                    <TextField name="name" type="text" defaultValue={selectedItem?.name} onChange={(value) => setData('name', value)} className="w-full" placeholder="Role" label={'Role'} />
+                    <TextField name="description" type="text" defaultValue={selectedItem?.description} onChange={(value) => setData('description', value)} className="w-full" placeholder="Description" label={'Description'} />
+                    <MultiComboBox
+                        items={permissionOptions}
+                        selectedItems={selectedItem?.permissions.map((permission) => ({
+                            id: permission.id, name: permission.name
+                        })) || []}
+                        isRequired={true}
+                        name="permissions"
+                        placeholder="Select permissions"
+                        label={'Permissions'}
+                        onSelectionChange={(keys) => setData('permissions', keys.map((key) => key.id))}
+                    />
+                    <div className="flex gap-2 w-min ms-auto">
+                        <Button variant="secondary" onPress={handleReset} className="w-full">Reset</Button>
+                        <Button type="submit" className="w-full" isDisabled={processing}>Save</Button>
+                    </div>
                 </div>
-            </div>
-        </Form>
+            </Form>
+        </div>
     );
 }
 

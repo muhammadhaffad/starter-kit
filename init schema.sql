@@ -190,3 +190,163 @@ SELECT
     menu_tree.path_name
 FROM menu_tree
 ORDER BY menu_tree.path_order;
+
+CREATE OR REPLACE FUNCTION adjust_menu_order_after_delete()
+RETURNS trigger AS $$
+BEGIN
+  -- Update order_index semua menu dengan parent_id yang sama
+  -- dan order_index lebih besar dari yang dihapus
+  UPDATE menus
+  SET order_index = order_index - 1
+  WHERE parent_id IS NOT DISTINCT FROM OLD.parent_id
+    AND order_index > OLD.order_index;
+
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER ta_adjust_menu_order_after_delete
+AFTER DELETE ON menus
+FOR EACH ROW
+EXECUTE PROCEDURE adjust_menu_order_after_delete();
+
+CREATE OR REPLACE FUNCTION set_menu_order_before_insert()
+RETURNS trigger AS $$
+DECLARE
+  max_order integer;
+BEGIN
+  -- Cari order_index tertinggi di parent yang sama
+  SELECT COALESCE(MAX(order_index), 0)
+  INTO max_order
+  FROM menus
+  WHERE parent_id IS NOT DISTINCT FROM NEW.parent_id;
+
+  -- Set order_index baru = max + 1
+  NEW.order_index := max_order + 1;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tb_set_menu_order_before_insert
+BEFORE INSERT ON menus
+FOR EACH ROW
+EXECUTE PROCEDURE set_menu_order_before_insert();
+
+ALTER TABLE menus
+DROP CONSTRAINT menus_parent_id_fkey;
+
+ALTER TABLE menus
+ADD CONSTRAINT menus_parent_id_fkey
+FOREIGN KEY (parent_id)
+REFERENCES menus (id)
+ON UPDATE NO ACTION
+ON DELETE RESTRICT;
+
+DROP VIEW public.menu_tree;
+CREATE OR REPLACE VIEW public.menu_tree AS 
+ WITH RECURSIVE menu_tree AS (
+         SELECT m.id,
+            m.name,
+            m.parent_id,
+            m.route,
+            m.slug,
+            m.icon,
+            m.order_index AS order_position,
+            1 AS level,
+            ARRAY[m.order_index] AS path_order_index,
+            ARRAY[m.id] AS path_order,
+            m.name::text AS path_name
+           FROM menus m
+          WHERE m.parent_id IS NULL
+        UNION ALL
+         SELECT m.id,
+            m.name,
+            m.parent_id,
+            m.route,
+            m.slug,
+            m.icon,
+            m.order_index AS order_position,
+            mt.level + 1 AS level,
+            mt.path_order_index || m.order_index AS path_order_index,
+            mt.path_order || m.id AS path_order,
+            (mt.path_name || ' > '::text) || m.name::text AS path_name
+           FROM menus m
+             JOIN menu_tree mt ON m.parent_id = mt.id
+        )
+ SELECT menu_tree.id,
+    menu_tree.name,
+    menu_tree.parent_id,
+    menu_tree.route,
+    menu_tree.slug,
+    menu_tree.icon,
+    menu_tree.order_position,
+    menu_tree.level,
+    menu_tree.path_order_index,
+    menu_tree.path_order,
+    menu_tree.path_name
+   FROM menu_tree
+  ORDER BY menu_tree.path_order_index;
+
+alter table menus 
+    add column menu_active_pattern varchar(100) default null;
+
+DROP VIEW public.menu_tree;
+CREATE OR REPLACE VIEW public.menu_tree AS 
+ WITH RECURSIVE menu_tree AS (
+         SELECT m.id,
+            m.name,
+            m.parent_id,
+            m.route,
+            m.menu_active_pattern,
+            m.slug,
+            m.icon,
+            m.order_index AS order_position,
+            1 AS level,
+            ARRAY[m.order_index] AS path_order_index,
+            ARRAY[m.id] AS path_order,
+            m.name::text AS path_name
+           FROM menus m
+          WHERE m.parent_id IS NULL
+        UNION ALL
+         SELECT m.id,
+            m.name,
+            m.parent_id,
+            m.route,
+            m.menu_active_pattern,
+            m.slug,
+            m.icon,
+            m.order_index AS order_position,
+            mt.level + 1 AS level,
+            mt.path_order_index || m.order_index AS path_order_index,
+            mt.path_order || m.id AS path_order,
+            (mt.path_name || ' > '::text) || m.name::text AS path_name
+           FROM menus m
+             JOIN menu_tree mt ON m.parent_id = mt.id
+        )
+ SELECT menu_tree.id,
+    menu_tree.name,
+    menu_tree.parent_id,
+    menu_tree.route,
+    menu_tree.menu_active_pattern,
+    menu_tree.slug,
+    menu_tree.icon,
+    menu_tree.order_position,
+    menu_tree.level,
+    menu_tree.path_order_index,
+    menu_tree.path_order,
+    menu_tree.path_name
+   FROM menu_tree
+  ORDER BY menu_tree.path_order_index;
+
+update menus set menu_active_pattern = 'users.*' where route = 'users.index';
+
+alter table menu_permission add column route varchar(100);
+
+UPDATE menu_permission mp
+SET route = m.route
+FROM menus m
+WHERE mp.menu_id = m.id;
+
+ALTER TABLE menu_permission
+ALTER COLUMN route SET NOT NULL;

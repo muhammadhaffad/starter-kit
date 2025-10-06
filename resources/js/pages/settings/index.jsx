@@ -6,12 +6,14 @@ import { useForm, usePage } from "@inertiajs/react";
 import { Dialog } from "@/components/ui/dialog";
 import { Modal } from "@/components/ui/modal";
 import { DialogTrigger, Heading } from "react-aria-components";
+import AppHead from "@/components/layout/app-head";
 
 export default function Settings() {
     const { user } = usePage().props;
     return (
         <AppLayout>
             <div className="flex flex-col gap-6">
+                <AppHead title="Account Settings" />
                 <h1 className="text-xl font-bold">Settings</h1>
                 <ProfileForm user={user} />
                 <ChangePasswordForm />

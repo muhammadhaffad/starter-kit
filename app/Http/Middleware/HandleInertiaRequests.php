@@ -42,12 +42,28 @@ class HandleInertiaRequests extends Middleware
             JOIN menu_permission mp ON mp.menu_id = mt.id
             JOIN permission_role pr ON pr.permission_id = mp.permission_id
             JOIN role_user ru ON ru.role_id = pr.role_id
-            WHERE pr.role_id = 1
-            ORDER BY mt.path_order";
-        $menus = \App\Models\Menu::hydrate(DB::select($menuQuery));
-        $menuActive = $menus->where('route', $request->route()->getName())->first();
+            WHERE ru.user_id = ?
+            ORDER BY mt.path_order_index";
+        $menus = \App\Models\Menu::hydrate(DB::select($menuQuery, [auth()->user()?->id]));
+        $currentRoute = $request->route()->getName();
+
+        $menuActive = $menus->first(function ($menu) use ($currentRoute) {
+            // Cek cocok persis
+            if ($menu->route === $currentRoute) {
+                return true;
+            }
+
+            // Cek cocok pattern (contoh: products.*)
+            if (!empty($menu->menu_active_pattern)) {
+                return \Illuminate\Support\Str::is($menu->menu_active_pattern, $currentRoute);
+            }
+
+            return false;
+        });
         $menuExpanded = json_decode(str_replace(['{', '}'], ['[', ']'], $menuActive?->path_order));
         return array_merge([
+            'app_name' => config('app.name'),
+            'app_logo' => config('app.logo'),
             'currentPath' => $request->path(),
             'user' => auth()->user() ?? null,
             'flash' => [
@@ -62,18 +78,20 @@ class HandleInertiaRequests extends Middleware
         ], parent::share($request));
     }
 
-    public function buildTree($menus, $parentId = null) {
+    public function buildTree($menus, $parentId = null)
+    {
         $branch = [];
         foreach ($menus as $menu) {
             if ($menu->parent_id === $parentId) {
                 $children = $this->buildTree($menus, $menu->id);
-    
+
                 $branch[] = [
                     'id' => (string) $menu->id,
                     'title' => $menu->name,
                     'type' => $children ? 'folder' : 'file',
                     'icon' => $menu->icon,
                     'route' => $menu->route,
+                    'menu_active_pattern' => $menu->menu_active_pattern,
                     'children' => $children
                 ];
             }

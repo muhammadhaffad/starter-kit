@@ -8,22 +8,24 @@ import { Menu, MenuItem, MenuSection, MenuSeparator } from "@/components/ui/menu
 import RootWrapper from "@/components/layout/root-wrapper";
 import { useRef } from "react";
 import { twMerge } from "tailwind-merge";
+import { useTheme } from "@/components/providers/theme-provider";
 
 export default function AppLayout({ children }) {
-    const { user, breadcrumbs, menus, menusFlatten, menuActive } = usePage().props;
-    const menuExpanded = JSON.parse(menusFlatten.find(menu => menu.id == menuActive).path_order.replace('{', '[').replace('}', ']'));
+    const { user, breadcrumbs, menus, menusFlatten, menuActive, app_logo, app_name } = usePage().props;
+    const { theme, setTheme } = useTheme()
+    const menuExpanded = JSON.parse(menusFlatten.find(menu => menu.id == menuActive)?.path_order.replace('{', '[').replace('}', ']') || '[]');
     const logoutRef = useRef();
     return (
         <RootWrapper>
             <SidebarProvider >
                 <Sidebar collapsible="dock">
                     <SidebarHeader>
-                        <div className="flex gap-x-2">
-                            <div className="w-[31px] h-[31px] bg-amber-300 flex items-center justify-center rounded">
-                                <Lucide.User size={18} />
+                        <div className="flex gap-x-2 items-center">
+                            <div className="w-[31px] h-[31px] p-1 bg-white flex items-center justify-center rounded shrink-0">
+                                <img src={app_logo} alt="" />
                             </div>
                             <SidebarLabel>
-                                <p>Test</p>
+                                <p className="text-ellipsis overflow-hidden font-bold">{app_name}</p>
                             </SidebarLabel>
                         </div>
                     </SidebarHeader>
@@ -33,7 +35,7 @@ export default function AppLayout({ children }) {
                             if (menu) {
                                 router.visit(route(menu.route));
                             }
-                        }} selectionMode="single" selectedKeys={menuActive.toString().split(',')} defaultExpandedKeys={menuExpanded.toString().split(',')} disallowEmptySelection>
+                        }} selectionMode="single" selectedKeys={menuActive?.toString().split(',')} defaultExpandedKeys={menuExpanded.toString().split(',')} disallowEmptySelection>
                             {function renderItem(item) {
                                 const Icon = Lucide[item.icon];
                                 return <SidebarTreeItem
@@ -105,16 +107,27 @@ export default function AppLayout({ children }) {
                 </Sidebar>
                 <SidebarInset>
                     <SidebarNav>
-                        <SidebarTrigger className={'p-2'}>
-                            <Lucide.Sidebar size={20} />
-                        </SidebarTrigger>
-                        <Breadcrumbs>
-                            {breadcrumbs?.map((path, index) => (
-                                <Breadcrumb key={index} href={index === breadcrumbs.length - 1 ? "#" : path.url} className={twMerge("flex items-center gap-2", path.url && "cursor-pointer")}>
-                                    {path.title}
-                                </Breadcrumb>
-                            ))}
-                        </Breadcrumbs>
+                        <div className="flex gap-2">
+                            <SidebarTrigger className={'p-2'}>
+                                <Lucide.Sidebar size={16} />
+                            </SidebarTrigger>
+                            <Breadcrumbs>
+                                {breadcrumbs?.map((path, index) => (
+                                    <Breadcrumb key={index} href={index === breadcrumbs.length - 1 ? "#" : path.url} className={twMerge("flex items-center gap-2", path.url && "cursor-pointer")}>
+                                        {path.title}
+                                    </Breadcrumb>
+                                ))}
+                            </Breadcrumbs>
+                        </div>
+                        <Button
+                            className="relative aspect-square ml-auto p-2"
+                            variant="icon"
+                            aria-label="Switch theme"
+                            onPress={() => setTheme(theme === "light" ? "dark" : "light")}
+                        >
+                            <Lucide.Sun size={16} className="transition-all scale-100 rotate-0 dark:scale-0 dark:-rotate-90" />
+                            <Lucide.Moon size={16} className="absolute transition-all scale-0 rotate-90 dark:scale-100 dark:rotate-0" />
+                        </Button>
                     </SidebarNav>
                     <div className="p-4 overflow-auto">
                         {children}

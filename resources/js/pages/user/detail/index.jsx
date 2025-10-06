@@ -1,3 +1,4 @@
+import AppHead from "@/components/layout/app-head";
 import AppLayout from "@/components/layout/app-layout";
 import { AlertDialog } from "@/components/ui/AlertDialog";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ export default function UserDetail({ user, roles }) {
     return (
         <AppLayout>
             <div className="flex flex-col gap-6">
+                <AppHead title="Detail User" />
                 <h1 className="text-xl font-bold">User Detail</h1>
                 <ProfileForm user={user} />
                 <ChangePasswordForm user={user} />

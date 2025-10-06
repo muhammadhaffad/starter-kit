@@ -21,7 +21,7 @@ class UserController extends Controller
             $trail->push('Settings', '/account-settings');
         });
         Inertia::share('breadcrumbs', Breadcrumbs::generate('account-settings')->toArray());
-        return Inertia::render('settings');
+        return Inertia::render('settings/index');
     }
 
     public function index(Request $request)
@@ -45,7 +45,6 @@ class UserController extends Controller
             $trail->push('User Detail', route('users.detail', $idUser));
         });
         Inertia::share('breadcrumbs', Breadcrumbs::generate('user-detail')->toArray());
-        Inertia::share('menuActive', \App\Models\Menu::where('route', 'users.index')->first()->id);
         return Inertia::render('user/detail/index', [
             'user' => $this->userService->getUserById($idUser),
             'roles' => \App\Models\Role::all(),
@@ -60,7 +59,6 @@ class UserController extends Controller
             $trail->push('Create User', route('users.create'));
         });
         Inertia::share('breadcrumbs', Breadcrumbs::generate('user-create')->toArray());
-        Inertia::share('menuActive', \App\Models\Menu::where('route', 'users.index')->first()->id);
         return Inertia::render('user/create/index', [
             'roles' => \App\Models\Role::all(),
         ]);

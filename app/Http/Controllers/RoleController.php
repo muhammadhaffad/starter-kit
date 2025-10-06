@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App;
+use Diglactic\Breadcrumbs\Breadcrumbs;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -14,6 +15,11 @@ class RoleController extends Controller
     public function index()
     {
         $roles = $this->roleService->getAllRole();
+        Breadcrumbs::for('roles', function($trail) {
+            $trail->parent('home');
+            $trail->push('Roles', route('roles.index'));
+        });
+        Inertia::share('breadcrumbs', Breadcrumbs::generate('roles')->toArray());
         $permissions = $this->permissionService->getAllPermission();
         return Inertia::render('role/index', compact('roles', 'permissions'));
     }

@@ -1,3 +1,4 @@
+import AppHead from "@/components/layout/app-head";
 import AppLayout from "@/components/layout/app-layout";
 import { Button } from "@/components/ui/button";
 import { ComboBox, ComboBoxItem } from "@/components/ui/ComboBox";
@@ -15,6 +16,7 @@ export default function UserCreate({ roles }) {
     return (
         <AppLayout>
             <div className="flex flex-col gap-6">
+                <AppHead title="Create User" />
                 <div className="">
                     <h1 className="text-xl font-bold">Create User</h1>
                     <p className="text-sm text-primary/50">Create user account.</p>
