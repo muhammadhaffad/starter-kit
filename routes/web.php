@@ -67,6 +67,8 @@ Route::prefix('roles')->middleware(['auth', 'check-menu-access'])->group(functio
 });
 Route::prefix('menus')->middleware(['auth', 'check-menu-access'])->group(function () {
     Route::get('/', [App\Http\Controllers\MenuController::class, 'index'])->name('menus.index');
+    Route::get('/detail/{id}', [App\Http\Controllers\MenuController::class, 'detailMenu'])->name('menus.detail');
+    Route::get('/create', [App\Http\Controllers\MenuController::class, 'createMenu'])->name('menus.create');
     Route::put('/update-order', [App\Http\Controllers\MenuController::class, 'updateMenuOrder'])->name('menus.update-order');
     Route::post('/add', [App\Http\Controllers\MenuController::class, 'storeMenu'])->name('menus.add');
     Route::delete('/{id}', [App\Http\Controllers\MenuController::class, 'destroyMenu'])->name('menus.destroy');

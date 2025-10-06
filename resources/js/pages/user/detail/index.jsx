@@ -14,7 +14,7 @@ import { useEffect, useRef } from "react";
 import { DialogTrigger, FormContext, Group, TagList, useSlottedContext } from "react-aria-components";
 import { useListData } from "react-stately";
 
-export default function UserDetail({ user, roles }) {
+export default function UserDetail({ userDetail: user, roles }) {
     return (
         <AppLayout>
             <div className="flex flex-col gap-6">

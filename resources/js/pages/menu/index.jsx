@@ -1,41 +1,37 @@
 import AppLayout from "@/components/layout/app-layout";
 import { Tree, TreeItem, TreeItemContent } from "@/components/ui/tree";
-import { Collection, DialogTrigger, Group, useDragAndDrop } from "react-aria-components";
+import { Collection, DialogTrigger, useDragAndDrop } from "react-aria-components";
 import * as Lucide from "lucide-react";
 import { useTreeData } from "react-stately";
 import { Tag, TagGroup } from "@/components/ui/TagGroup";
 import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
-import { router, useForm } from "@inertiajs/react";
-import { Form } from "@/components/ui/form";
-import { Select, SelectItem } from "@/components/ui/Select";
-import { TextField } from "@/components/ui/text-field";
+import { router } from "@inertiajs/react";
 import { twMerge } from "tailwind-merge";
 import { Modal } from "@/components/ui/modal";
 import { AlertDialog } from "@/components/ui/AlertDialog";
 import AppHead from "@/components/layout/app-head";
-import { ComboBox, ComboBoxItem } from "@/components/ui/ComboBox";
-import { Label } from "@/components/ui/field";
+import { Link } from "@/components/ui/link";
 
-export default function Menu({ menus, permissions, routes }) {
-    const [keyTree, setKeyTree] = useState(1);
-    const [selectedMenu, setSelectedMenu] = useState(null);
-
+export default function Menu({ menus }) {
     return (
         <AppLayout>
             <div className="grid grid-cols-1 gap-6 items-start">
                 <AppHead title="Menus" />
-                <div className="col-span-full">
+                <div className="col-span-full flex items-center gap-2">
                     <h1 className="text-xl font-bold">Menu</h1>
+                    /
+                    <Link href={route('menus.create')} className="text-blue-500">
+                        Create Menu
+                    </Link>
                 </div>
-                <TreeMenu menus={menus} className="col-span-full" setSelectedMenu={setSelectedMenu} key={keyTree} />
-                <TreeMenuForm permissions={permissions} routes={routes} className="col-span-full" selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu} key={selectedMenu?.id} setKeyTree={setKeyTree} />
+                <TreeMenu menus={menus} className="col-span-full" />
             </div>
         </AppLayout >
     );
 }
 
-function TreeMenu({ menus, className, setSelectedMenu }) {
+function TreeMenu({ menus, className }) {
     let treeMenu = useTreeData({
         initialItems: menus
     });
@@ -115,9 +111,9 @@ function TreeMenu({ menus, className, setSelectedMenu }) {
                                             <Tag key={permission.id}>{permission.name}</Tag>
                                         ))}
                                     </TagGroup>}
-                                    <Button variant="icon" onPress={() => setSelectedMenu(item.value)}>
+                                    <Link href={route('menus.detail', item.value.id)} variant="icon">
                                         <Lucide.Edit3 size={16} className="text-yellow-500" />
-                                    </Button>
+                                    </Link>
                                     <DialogTrigger>
                                         <Button variant="icon" className="flex w-min items-center ">
                                             <Lucide.Trash2 size={16} className="text-red-500" />
@@ -142,135 +138,6 @@ function TreeMenu({ menus, className, setSelectedMenu }) {
                 </TreeItem>
             }}
         </Tree>
-    )
-}
-
-function TreeMenuForm({ permissions, className, selectedMenu, setSelectedMenu, setKeyTree, routes }) {
-    const { data, setData, post, put, processing, errors, reset, setDefaults } = useForm({
-        title: selectedMenu?.title ?? "",
-        icon: selectedMenu?.icon ?? "",
-        route: selectedMenu?.route ?? "",
-        menu_active_pattern: selectedMenu?.menu_active_pattern ?? "",
-        permissions: selectedMenu?.permissions?.map((permission) => permission.id) ?? [],
-        pair_permissions: selectedMenu?.permissions?.map((permission) => ({
-            menu_id: permission.pivot.menu_id,
-            permission_id: permission.id,
-            route: permission.pivot.route,
-        })) ?? [{
-            menu_id: selectedMenu?.id,
-            permission_id: null,
-            route: null,
-        }],
-    });
-    console.info(data);
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (selectedMenu?.id) {
-            put(route('menus.update', selectedMenu.id), {
-                onSuccess: () => {
-                    setSelectedMenu(null);
-                    router.reload({
-                        only: ['menus'], onSuccess: () => {
-                            setKeyTree((prev) => prev + 1);
-                        }
-                    });
-                }
-            });
-        } else {
-            post(route('menus.add'), {
-                onSuccess: () => {
-                    reset();
-                    router.reload({
-                        only: ['menus'], onSuccess: () => {
-                            setKeyTree((prev) => prev + 1);
-                        }
-                    });
-                }
-            });
-        }
-    }
-    return (
-        <div className={twMerge("col-span-1 flex flex-col gap-4 p-4 border rounded-xl", className)}>
-            <h2 className="text-lg font-semibold">{
-                selectedMenu?.id ? `Edit Menu ${selectedMenu.title}` : "Add Menu"
-            }</h2>
-            <Form onSubmit={handleSubmit} validationErrors={errors}>
-                <input type="hidden" name="id" defaultValue={selectedMenu?.id} />
-                <TextField
-                    label="Title"
-                    name="title"
-                    isRequired
-                    value={data.title}
-                    onChange={(value) => setData('title', value)}
-                />
-                <TextField
-                    label="Icon"
-                    name="icon"
-                    description={<>Component name from Lucide, please refer to <a className="text-blue-500" href="https://lucide.dev/icons">Lucide Icons</a></>}
-                    isRequired
-                    value={data.icon}
-                    onChange={(value) => setData('icon', value)}
-                />
-                <ComboBox
-                    label="URL"
-                    name="route"
-                    items={routes.map((route) => ({ id: route, label: route }))}
-                    placeholder="Select route"
-                    selectedKey={data.route}
-                    onSelectionChange={(value) => setData('route', value)}
-                >
-                    {(item) => <ComboBoxItem id={item.id}>{item.label}</ComboBoxItem>}
-                </ComboBox>
-                <TextField
-                    label="Menu Active Pattern"
-                    name="menu_active_pattern"
-                    value={data.menu_active_pattern}
-                    onChange={(value) => setData('menu_active_pattern', value)}
-                />
-                <Group className="w-full">
-                    <div className="flex justify-between">
-                        <Label>Permissions (Route - Permission)</Label>
-                        <Button variant="icon" onPress={() => {}}>
-                            <Lucide.Plus size={16} /> Add
-                        </Button>
-                    </div>
-                    {data.pair_permissions.map((pair_permission, index) => (
-                        <Group className="flex gap-2 items-center">
-                            <Group className="grid grid-cols-2 gap-2 w-full">
-                                <ComboBox
-                                    name="route"
-                                    items={routes.map((route) => ({ id: route, label: route }))}
-                                    placeholder="Select route"
-                                    defaultSelectedKey={pair_permission.route}
-                                    className="w-full"
-                                // onSelectionChange={(value) => setData('route', value)}
-                                >
-                                    {(item) => <ComboBoxItem id={item.id}>{item.label}</ComboBoxItem>}
-                                </ComboBox>
-                                <ComboBox
-                                    name="permission"
-                                    items={permissions.map((permission) => ({ id: permission.id, label: permission.name }))}
-                                    placeholder="Select permission"
-                                    defaultSelectedKey={pair_permission.permission_id}
-                                    className="w-full"
-                                // onSelectionChange={(value) => setData('route', value)}
-                                >
-                                    {(item) => <ComboBoxItem id={item.id}>{item.label}</ComboBoxItem>}
-                                </ComboBox>
-                            </Group>
-                            <Button variant="icon" className="disabled:opacity-50" onPress={() => { }} isDisabled={index === 0}>
-                                <Lucide.Trash2 size={16} className="text-red-500" />
-                            </Button>
-                        </Group>
-                    ))}
-                </Group>
-                <div className="flex gap-2 justify-end">
-                    <Button variant="secondary" className="w-min" onClick={() => (setSelectedMenu(null), reset())}>Reset</Button>
-                    <Button className="w-min" isDisabled={processing} type="submit">Save</Button>
-                </div>
-            </Form>
-        </div>
     )
 }
 

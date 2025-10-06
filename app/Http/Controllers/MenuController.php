@@ -28,7 +28,40 @@ class MenuController extends Controller
             $trail->push('Menu', route('menus.index'));
         });
         Inertia::share('breadcrumbs', Breadcrumbs::generate('menus')->toArray());
-        return Inertia::render('menu/index', compact('menus', 'permissions', 'routes'));
+        return Inertia::render('menu/index', compact('menus'));
+    }
+
+    public function detailMenu($id)
+    {
+        $menu = $this->menuService->getMenu($id);
+        $permissions = App\Models\Permission::all();
+        $routes = collect(Route::getRoutes())
+            ->map(fn($route) => $route->getName())
+            ->filter()
+            ->values();
+        Breadcrumbs::for('menu-detail', function ($trail) use ($menu) {
+            $trail->parent('home');
+            $trail->push('Menu', route('menus.index'));
+            $trail->push('Menu Detail', route('menus.detail', $menu->id));
+        });
+        Inertia::share('breadcrumbs', Breadcrumbs::generate('menu-detail')->toArray());
+        return Inertia::render('menu/detail/index', compact('menu', 'permissions', 'routes'));
+    }
+
+    public function createMenu()
+    {
+        $permissions = App\Models\Permission::all();
+        $routes = collect(Route::getRoutes())
+            ->map(fn($route) => $route->getName())
+            ->filter()
+            ->values();
+        Breadcrumbs::for('menu-create', function ($trail) {
+            $trail->parent('home');
+            $trail->push('Menu', route('menus.index'));
+            $trail->push('Create Menu', route('menus.create'));
+        });
+        Inertia::share('breadcrumbs', Breadcrumbs::generate('menu-create')->toArray());
+        return Inertia::render('menu/detail/index', compact('permissions', 'routes'));
     }
 
     public function updateMenuOrder(Request $request)
@@ -50,6 +83,8 @@ class MenuController extends Controller
             'route' => 'nullable',
             'menu_active_pattern' => 'nullable',
             'permissions' => 'required|array',
+            'permissions.*.route' => 'required',
+            'permissions.*.permission_id' => 'required',
         ]);
         try {
             $this->menuService->addMenu($validated);
@@ -77,6 +112,8 @@ class MenuController extends Controller
             'route' => 'nullable',
             'menu_active_pattern' => 'nullable',
             'permissions' => 'required|array',
+            'permissions.*.route' => 'required',
+            'permissions.*.permission_id' => 'required',
         ]);
         try {
             $this->menuService->updateMenu($request->id, $validated);

@@ -46,7 +46,7 @@ class UserController extends Controller
         });
         Inertia::share('breadcrumbs', Breadcrumbs::generate('user-detail')->toArray());
         return Inertia::render('user/detail/index', [
-            'user' => $this->userService->getUserById($idUser),
+            'userDetail' => $this->userService->getUserById($idUser),
             'roles' => \App\Models\Role::all(),
         ]);
     }

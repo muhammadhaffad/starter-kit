@@ -350,3 +350,9 @@ WHERE mp.menu_id = m.id;
 
 ALTER TABLE menu_permission
 ALTER COLUMN route SET NOT NULL;
+
+ALTER TABLE menu_permission
+DROP CONSTRAINT menu_permission_pkey;
+
+ALTER TABLE menu_permission
+ADD CONSTRAINT menu_permission_pkey PRIMARY KEY (menu_id, permission_id, route);

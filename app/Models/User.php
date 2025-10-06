@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -59,6 +60,15 @@ class User extends Authenticatable
     {
         $userPermissions = $this->permissions()->pluck('id')->toArray();
         $menuPermissions = $menu->permissions()->pluck('id')->toArray();
+
+        // Jika ada intersection, berarti user punya akses
+        return count(array_intersect($userPermissions, $menuPermissions)) > 0;
+    }
+
+    public function canAccessRoute($route): bool
+    {
+        $userPermissions = $this->permissions()->pluck('id')->toArray();
+        $menuPermissions = DB::table('menu_permission')->where('route', $route)->pluck('permission_id')->toArray();
 
         // Jika ada intersection, berarti user punya akses
         return count(array_intersect($userPermissions, $menuPermissions)) > 0;

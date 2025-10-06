@@ -15,6 +15,10 @@ class MenuService
         return $this->buildTree($menus);
     }
 
+    public function getMenu($id) {
+        return App\Models\Menu::with('permissions')->find($id);
+    }
+
     public function updateMenuOrder($id, $order, $parentId) {
         $menu = App\Models\Menu::find($id);
         $menu->order_index = $order;
@@ -23,11 +27,17 @@ class MenuService
     }
 
     public function addMenu($data) {
+        DB::beginTransaction();
         $data['name'] = $data['title'];
         $data['slug'] = Str::slug($data['name']);
         unset($data['title']);
         $menu = App\Models\Menu::create($data);
-        $menu->permissions()->attach($data['permissions']);
+        $pivotData = [];
+        foreach ($data['permissions'] as $item) {
+            $pivotData[$item['permission_id']] = ['route' => $item['route']];
+        }
+        $menu->permissions()->attach($pivotData);
+        DB::commit();
         return $menu;
     }
 
@@ -37,12 +47,22 @@ class MenuService
     }
 
     public function updateMenu($id, $data) {
+        DB::beginTransaction();
         $menu = App\Models\Menu::find($id);
         $data['name'] = $data['title'];
         $data['slug'] = Str::slug($data['name']);
         unset($data['title']);
         $menu->update($data);
-        $menu->permissions()->sync($data['permissions']);
+        $menu->permissions()->detach();
+        $pivotData = array_map(function ($permission) use ($menu) {
+            return [
+                'menu_id' => $menu->id,
+                'permission_id' => $permission['permission_id'],
+                'route' => $permission['route']
+            ];
+        }, $data['permissions']);
+        DB::table('menu_permission')->insert($pivotData);
+        DB::commit();
         return $menu;
     }
 
