@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 class MenuController extends Controller
@@ -18,15 +19,20 @@ class MenuController extends Controller
     {
         $menus = $this->menuService->getMenus();
         $permissions = App\Models\Permission::all();
-        Breadcrumbs::for('menus', function($trail) {
+        $routes = collect(Route::getRoutes())
+            ->map(fn($route) => $route->getName())
+            ->filter()
+            ->values();
+        Breadcrumbs::for('menus', function ($trail) {
             $trail->parent('home');
             $trail->push('Menu', route('menus.index'));
         });
         Inertia::share('breadcrumbs', Breadcrumbs::generate('menus')->toArray());
-        return Inertia::render('menu/index', compact('menus', 'permissions'));
+        return Inertia::render('menu/index', compact('menus', 'permissions', 'routes'));
     }
 
-    public function updateMenuOrder(Request $request) {
+    public function updateMenuOrder(Request $request)
+    {
         $request->validate([
             'menu_id' => 'required',
             'order' => 'required|numeric',
@@ -35,8 +41,9 @@ class MenuController extends Controller
         $this->menuService->updateMenuOrder($request->menu_id, $request->order, $request->parent_id ?? null);
         return redirect()->back()->with('success', 'Menu order updated successfully');
     }
-    
-    public function storeMenu(Request $request) {
+
+    public function storeMenu(Request $request)
+    {
         $validated = $request->validate([
             'title' => 'required',
             'icon' => 'required',
@@ -52,7 +59,8 @@ class MenuController extends Controller
         }
     }
 
-    public function destroyMenu($id) {
+    public function destroyMenu($id)
+    {
         try {
             $this->menuService->deleteMenu($id);
             return redirect()->back()->with('success', 'Menu deleted successfully');
@@ -61,7 +69,8 @@ class MenuController extends Controller
         }
     }
 
-    public function updateMenu($id, Request $request) {
+    public function updateMenu($id, Request $request)
+    {
         $validated = $request->validate([
             'title' => 'required',
             'icon' => 'required',
@@ -77,12 +86,13 @@ class MenuController extends Controller
         }
     }
 
-    public function buildTree($menus, $parentId = null) {
+    public function buildTree($menus, $parentId = null)
+    {
         $branch = [];
         foreach ($menus as $menu) {
             if ($menu->parent_id === $parentId) {
                 $children = $this->buildTree($menus, $menu->id);
-    
+
                 $branch[] = [
                     'id' => (string) $menu->id,
                     'title' => $menu->name,

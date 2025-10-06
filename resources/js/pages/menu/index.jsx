@@ -1,6 +1,6 @@
 import AppLayout from "@/components/layout/app-layout";
 import { Tree, TreeItem, TreeItemContent } from "@/components/ui/tree";
-import { Collection, DialogTrigger, useDragAndDrop } from "react-aria-components";
+import { Collection, DialogTrigger, Group, useDragAndDrop } from "react-aria-components";
 import * as Lucide from "lucide-react";
 import { useTreeData } from "react-stately";
 import { Tag, TagGroup } from "@/components/ui/TagGroup";
@@ -14,20 +14,22 @@ import { twMerge } from "tailwind-merge";
 import { Modal } from "@/components/ui/modal";
 import { AlertDialog } from "@/components/ui/AlertDialog";
 import AppHead from "@/components/layout/app-head";
+import { ComboBox, ComboBoxItem } from "@/components/ui/ComboBox";
+import { Label } from "@/components/ui/field";
 
-export default function Menu({ menus, permissions }) {
+export default function Menu({ menus, permissions, routes }) {
     const [keyTree, setKeyTree] = useState(1);
     const [selectedMenu, setSelectedMenu] = useState(null);
 
     return (
         <AppLayout>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+            <div className="grid grid-cols-1 gap-6 items-start">
                 <AppHead title="Menus" />
                 <div className="col-span-full">
                     <h1 className="text-xl font-bold">Menu</h1>
                 </div>
-                <TreeMenu menus={menus} className="col-span-full md:col-span-2" setSelectedMenu={setSelectedMenu} key={keyTree} />
-                <TreeMenuForm permissions={permissions} className="col-span-full md:col-span-1" selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu} key={selectedMenu?.id} setKeyTree={setKeyTree} />
+                <TreeMenu menus={menus} className="col-span-full" setSelectedMenu={setSelectedMenu} key={keyTree} />
+                <TreeMenuForm permissions={permissions} routes={routes} className="col-span-full" selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu} key={selectedMenu?.id} setKeyTree={setKeyTree} />
             </div>
         </AppLayout >
     );
@@ -143,7 +145,7 @@ function TreeMenu({ menus, className, setSelectedMenu }) {
     )
 }
 
-function TreeMenuForm({ permissions, className, selectedMenu, setSelectedMenu, setKeyTree }) {
+function TreeMenuForm({ permissions, className, selectedMenu, setSelectedMenu, setKeyTree, routes }) {
     const { data, setData, post, put, processing, errors, reset, setDefaults } = useForm({
         title: selectedMenu?.title ?? "",
         icon: selectedMenu?.icon ?? "",
@@ -154,7 +156,11 @@ function TreeMenuForm({ permissions, className, selectedMenu, setSelectedMenu, s
             menu_id: permission.pivot.menu_id,
             permission_id: permission.id,
             route: permission.pivot.route,
-        })) ?? [],
+        })) ?? [{
+            menu_id: selectedMenu?.id,
+            permission_id: null,
+            route: null,
+        }],
     });
     console.info(data);
 
@@ -206,39 +212,59 @@ function TreeMenuForm({ permissions, className, selectedMenu, setSelectedMenu, s
                     value={data.icon}
                     onChange={(value) => setData('icon', value)}
                 />
-                <TextField
-                    label="Route"
+                <ComboBox
+                    label="URL"
                     name="route"
-                    value={data.route}
-                    onChange={(value) => setData('route', value)}
-                />
+                    items={routes.map((route) => ({ id: route, label: route }))}
+                    placeholder="Select route"
+                    selectedKey={data.route}
+                    onSelectionChange={(value) => setData('route', value)}
+                >
+                    {(item) => <ComboBoxItem id={item.id}>{item.label}</ComboBoxItem>}
+                </ComboBox>
                 <TextField
                     label="Menu Active Pattern"
                     name="menu_active_pattern"
                     value={data.menu_active_pattern}
                     onChange={(value) => setData('menu_active_pattern', value)}
                 />
-                <Select
-                    label="Permissions"
-                    name="permissions"
-                    items={permissions}
-                    selectionMode="multiple"
-                    placeholder="Select permissions"
-                    selectValue={
-                        ({ selectedItems, defaultChildren, isPlaceholder }) => (
-                            isPlaceholder || selectedItems.length === 1
-                                ? defaultChildren
-                                : `${selectedItems.map(item => item.name).join(', ')}`
-                        )
-                    }
-                    value={data.permissions}
-                    onChange={(selected) => setData('permissions', selected)}
-                    isRequired
-                >
-                    {permission => (
-                        <SelectItem id={permission.id}>{permission.name}</SelectItem>
-                    )}
-                </Select>
+                <Group className="w-full">
+                    <div className="flex justify-between">
+                        <Label>Permissions (Route - Permission)</Label>
+                        <Button variant="icon" onPress={() => {}}>
+                            <Lucide.Plus size={16} /> Add
+                        </Button>
+                    </div>
+                    {data.pair_permissions.map((pair_permission, index) => (
+                        <Group className="flex gap-2 items-center">
+                            <Group className="grid grid-cols-2 gap-2 w-full">
+                                <ComboBox
+                                    name="route"
+                                    items={routes.map((route) => ({ id: route, label: route }))}
+                                    placeholder="Select route"
+                                    defaultSelectedKey={pair_permission.route}
+                                    className="w-full"
+                                // onSelectionChange={(value) => setData('route', value)}
+                                >
+                                    {(item) => <ComboBoxItem id={item.id}>{item.label}</ComboBoxItem>}
+                                </ComboBox>
+                                <ComboBox
+                                    name="permission"
+                                    items={permissions.map((permission) => ({ id: permission.id, label: permission.name }))}
+                                    placeholder="Select permission"
+                                    defaultSelectedKey={pair_permission.permission_id}
+                                    className="w-full"
+                                // onSelectionChange={(value) => setData('route', value)}
+                                >
+                                    {(item) => <ComboBoxItem id={item.id}>{item.label}</ComboBoxItem>}
+                                </ComboBox>
+                            </Group>
+                            <Button variant="icon" className="disabled:opacity-50" onPress={() => { }} isDisabled={index === 0}>
+                                <Lucide.Trash2 size={16} className="text-red-500" />
+                            </Button>
+                        </Group>
+                    ))}
+                </Group>
                 <div className="flex gap-2 justify-end">
                     <Button variant="secondary" className="w-min" onClick={() => (setSelectedMenu(null), reset())}>Reset</Button>
                     <Button className="w-min" isDisabled={processing} type="submit">Save</Button>
