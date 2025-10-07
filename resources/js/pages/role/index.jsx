@@ -11,42 +11,69 @@ import { TextField } from "@/components/ui/text-field";
 import { router, useForm } from "@inertiajs/react";
 import { useFormValidation } from "@react-aria/form";
 import { useFormValidationState } from "@react-stately/form";
-import { Edit3, Trash, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Edit3, Trash, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { DialogTrigger, FormContext, Group, TableBody, TagList, useSlottedContext } from "react-aria-components";
 import { useListData } from "react-stately";
+import { Pressable } from "react-aria-components";
+import { SearchField } from "@/components/ui/SearchField";
+import { getPages, getQueryParams, updateQueryParams } from "@/utils";
+import { Link } from "@/components/ui/link";
 
 export default function Role({ roles, permissions }) {
     const [selectedKeys, setSelectedKeys] = useState(new Set([]));
     const [selectedItem, setSelectedItem] = useState(null);
-    const [resetKey, setResetKey] = useState(0);
-
-    const handleReset = () => {
-        setSelectedItem(null);
-        setResetKey((prev) => prev + 1);
-    }
+    const [open, setOpen] = useState(false);
 
     return (
         <AppLayout>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+            <div className="grid grid-cols-1 gap-6 w-full">
                 <AppHead title="Roles" />
-                <h1 className="text-xl font-bold col-span-full">Role</h1>
-                <div className="overflow-auto md:col-span-2">
-                    <Table className="w-full max-h-full" aria-label="Files" width="100%" selectionKeys={selectedKeys} onSelectionChange={(keys) => {
-                        if (keys == 'all') {
-                            setSelectedKeys(new Set(roles.map((role) => role.id)))
-                        } else {
-                            setSelectedKeys(keys)
-                        }
-                    }}>
+                <div className="flex gap-2 items-end">
+                    <h1 className="text-xl font-bold col-span-full">Role</h1>
+                    /
+                    <Pressable onPress={() => (setSelectedItem(null), setOpen(true))}>
+                        <span className="text-blue-500 underline cursor-pointer">Create Role</span>
+                    </Pressable>
+                </div>
+                <Form onSubmit={(e) => {
+                    e.preventDefault();
+                    let url = updateQueryParams(null, 'search', e.target.search.value);
+                    url = updateQueryParams(url, 'page', 1);
+                    router.get(url.toString());
+                }}>
+                    <SearchField autoFocus className={'max-w-2xs'} defaultValue={getQueryParams('search')} placeholder="Search..." name="search" />
+                </Form>
+                <div className="overflow-auto">
+                    <Table
+                        className="w-full max-h-full"
+                        aria-label="Roles"
+                        width="100%"
+                        selectionKeys={selectedKeys}
+                        onSelectionChange={(keys) => {
+                            if (keys == 'all') {
+                                setSelectedKeys(new Set(roles.map((role) => role.id)))
+                            } else {
+                                setSelectedKeys(keys)
+                            }
+                        }}
+                        sortDescriptor={{
+                            column: getQueryParams('column'),
+                            direction: getQueryParams('direction')
+                        }} onSortChange={(props) => {
+                            let url = updateQueryParams(null, 'column', props.column);
+                            url = updateQueryParams(url, 'direction', props.direction);
+                            router.get(url.toString());
+                        }}
+                    >
                         <TableHeader className="w-full h-8">
-                            <Column width={100} isRowHeader>Role</Column>
-                            <Column width={100} isRowHeader>Description</Column>
-                            <Column minWidth={200}>Permissions</Column>
+                            <Column id="name" width={100} isRowHeader allowsSorting>Role</Column>
+                            <Column id="description" width={100} isRowHeader allowsSorting>Description</Column>
+                            <Column width={'auto'}>Permissions</Column>
                             <Column width={100}>Action</Column>
                         </TableHeader>
-                        <TableBody>
-                            {roles.map((role) => {
+                        <TableBody items={roles.data}>
+                            {(role) => {
                                 return (<Row style={{ verticalAlign: 'top' }} key={role.id.toString()}>
                                     <Cell>{role.name}</Cell>
                                     <Cell>{role.description}</Cell>
@@ -59,7 +86,7 @@ export default function Role({ roles, permissions }) {
                                     </Cell>
                                     <Cell>
                                         <div className="flex gap-1 justify-end">
-                                            <Button variant="icon" className="flex w-min items-center " onPress={() => setSelectedItem(role)}>
+                                            <Button variant="icon" className="flex w-min items-center " onPress={() => (setSelectedItem(role), setOpen(true))}>
                                                 <Edit3 size={16} className="text-yellow-500" />
                                             </Button>
                                             <DialogTrigger>
@@ -75,24 +102,37 @@ export default function Role({ roles, permissions }) {
                                         </div>
                                     </Cell>
                                 </Row>)
-                            })}
+                            }}
                         </TableBody>
                     </Table>
                 </div>
-                <RoleForm key={selectedItem ? selectedItem.id : `new-${resetKey}`} permissions={permissions} selectedItem={selectedItem} handleReset={handleReset} />
+                <div className="flex justify-center items-center gap-2">
+                    <Link variant="secondary" className="data-[disabled=true]:opacity-50" isDisabled={!roles.prev_page_url} href={roles.prev_page_url && roles.prev_page_url}><ChevronLeft /></Link>
+                    <span>
+                        Page{" "}
+                        <select className="border p-1" value={roles.current_page} onChange={(e) => router.get(updateQueryParams(null, 'page', e.target.value))}>
+                            {getPages(roles.current_page, roles.last_page).map((page) => (
+                                <option key={page} value={page}>{page}</option>
+                            ))}
+                        </select>{" "}
+                        of {roles.last_page}
+                    </span>
+                    <Link variant="secondary" className="data-[disabled=true]:opacity-50" isDisabled={!roles.next_page_url} href={roles.next_page_url && roles.next_page_url}><ChevronRight /></Link>
+                </div>
+                <RoleForm open={open} setOpen={setOpen} key={selectedItem?.id} permissions={permissions} selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
             </div>
         </AppLayout>
     )
 }
 
-function RoleForm({ permissions, selectedItem, handleReset }) {
-    const { data, setData, post, put, processing, errors } = useForm({
+function RoleForm({ open, setOpen, permissions, selectedItem, setSelectedItem }) {
+    const { data, setData, post, put, processing, errors, reset } = useForm({
         name: selectedItem?.name || null,
         description: selectedItem?.description || null,
         permissions: selectedItem?.permissions?.map((permission) => permission.id) || []
     });
 
-    
+
     const permissionOptions = permissions.map((permission) => {
         return ({ id: permission.id, name: permission.name })
     });
@@ -102,21 +142,25 @@ function RoleForm({ permissions, selectedItem, handleReset }) {
         if (selectedItem?.id) {
             put(route('roles.update', selectedItem.id), {
                 onSuccess: () => {
-                    handleReset();
+                    reset();
+                    setSelectedItem(null);
+                    setOpen(false);
                 }
             });
         } else {
             post(route('roles.create'), {
                 onSuccess: () => {
-                    handleReset();
+                    reset();
+                    setSelectedItem(null);
+                    setOpen(false);
                 }
             });
         }
     }
 
     return (
-        <div className="flex flex-col gap-4 p-4 border rounded-xl md:col-span-1">
-            <Form validationErrors={errors} onSubmit={handleSubmit} >
+        <Modal isOpen={open} onOpenChange={setOpen} isDismissable>
+            <Form validationErrors={errors} onSubmit={handleSubmit} className="p-4 flex flex-col gap-4">
                 <h2 className="text-lg font-semibold">{selectedItem?.id ? `Edit ${selectedItem.name} Role` : 'Add Role'}</h2>
                 <div className="grid grid-cols-1 gap-2">
                     <input type="hidden" name="id" defaultValue={selectedItem?.id} />
@@ -133,13 +177,13 @@ function RoleForm({ permissions, selectedItem, handleReset }) {
                         label={'Permissions'}
                         onSelectionChange={(keys) => setData('permissions', keys.map((key) => key.id))}
                     />
-                    <div className="flex gap-2 w-min ms-auto">
-                        <Button variant="secondary" onPress={handleReset} className="w-full">Reset</Button>
-                        <Button type="submit" className="w-full" isDisabled={processing}>Save</Button>
-                    </div>
+                </div>
+                <div className="flex gap-2 w-min ms-auto">
+                    <Button variant="secondary" onPress={() => setOpen(false)} className="w-full">Cancel</Button>
+                    <Button type="submit" className="w-full" isDisabled={processing}>Save</Button>
                 </div>
             </Form>
-        </div>
+        </Modal>
     );
 }
 

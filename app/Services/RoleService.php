@@ -6,9 +6,18 @@ use App;
 
 class RoleService
 {
-    public function getAllRole()
+    public function getAllRole($data)
     {
-        return App\Models\Role::with('permissions')->orderBy('id', 'asc')->get();
+        $perPage = (int)($data['perPage'] ?? 10);
+        $column = in_array($data['column'] ?? null, ['name', 'description']) ? $data['column'] : 'id';
+        $data['direction'] = str_replace(['ascending', 'descending'], ['asc', 'desc'], $data['direction'] ?? null);
+        $direction = in_array($data['direction'] ?? null, ['asc', 'desc']) ? $data['direction'] : 'desc';
+        return App\Models\Role::with('permissions')->where(function ($query) use ($data) {
+            if (isset($data['search'])) {
+                $query->where('name', 'like', '%' . $data['search'] . '%')
+                    ->orWhere('description', 'like', '%' . $data['search'] . '%');
+            }
+        })->orderBy($column, $direction)->paginate($perPage)->withQueryString();
     }
 
     public function createRole($data)

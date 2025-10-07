@@ -1,26 +1,17 @@
-import { Button } from "@/components/ui/button";
 import { Cell, Column, Row, Table, TableHeader } from "@/components/ui/table";
 import { Tag, TagGroup } from "@/components/ui/TagGroup";
-import { ChevronLeft, ChevronRight, Edit3, Trash } from "lucide-react";
-import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import AppLayout from "@/components/layout/app-layout";
 import { TableBody } from "react-aria-components";
 import { Link } from "@/components/ui/link";
 import { Switch } from "@/components/ui/Switch";
-import { router, useForm } from "@inertiajs/react";
+import { router } from "@inertiajs/react";
 import { SearchField } from "@/components/ui/SearchField";
 import { Form } from "@/components/ui/form";
 import AppHead from "@/components/layout/app-head";
+import { getPages, getQueryParams, updateQueryParams } from "@/utils";
 
 export default function User({ users }) {
-    const { data, setData, get } = useForm({
-        search: getQueryParams('search')
-    });
-
-    const handleSearch = (e) => {
-        e.preventDefault();
-        get(route('users.index'));
-    };
     return (
         <AppLayout>
             <div className="flex flex-col gap-6">
@@ -30,19 +21,33 @@ export default function User({ users }) {
                     /
                     <Link href={route('users.create')} className="text-primary hover:underline">Create User</Link>
                 </div>
-                <Form onSubmit={handleSearch}>
-                    <SearchField className={'max-w-2xs'} defaultValue={data.search} onChange={(value) => setData('search', value)} placeholder="Search..." name="search" />
+                <Form onSubmit={(e) => {
+                    e.preventDefault();
+                    let url = updateQueryParams(null, 'search', e.target.search.value);
+                    url = updateQueryParams(url, 'page', 1);
+                    router.get(url.toString());
+                }}>
+                    <SearchField autoFocus className={'max-w-2xs'} defaultValue={getQueryParams('search')} placeholder="Search..." name="search" />
                 </Form>
                 <div className="overflow-auto">
-                    <Table className="w-full" aria-label="Files" width="100%">
+                    <Table className="w-full" aria-label="Files" width="100%"
+                        sortDescriptor={{
+                            column: getQueryParams('column'),
+                            direction: getQueryParams('direction')
+                        }} onSortChange={(props) => {
+                            let url = updateQueryParams(null, 'column', props.column);
+                            url = updateQueryParams(url, 'direction', props.direction);
+                            router.get(url.toString());
+                        }}
+                    >
                         <TableHeader className="w-full h-8">
-                            <Column width={200} isRowHeader>Name</Column>
-                            <Column width={200} isRowHeader>Email</Column>
-                            <Column width={'auto'} isRowHeader>Role</Column>
-                            <Column width={100} isRowHeader>Is Active?</Column>
+                            <Column id="name" width={200} isRowHeader allowsSorting>Name</Column>
+                            <Column id="email" width={200} isRowHeader allowsSorting>Email</Column>
+                            <Column id="role" width={'auto'} isRowHeader>Role</Column>
+                            <Column id="is_active" width={100} isRowHeader>Is Active?</Column>
                         </TableHeader>
-                        <TableBody>
-                            {users.data.map((user) => {
+                        <TableBody items={users.data}>
+                            {(user) => {
                                 return (<Row href={route('users.detail', user.id)} style={{ verticalAlign: 'top', cursor: 'pointer' }} key={user.id.toString()}>
                                     <Cell>{user.name}</Cell>
                                     <Cell>{user.email}</Cell>
@@ -61,7 +66,7 @@ export default function User({ users }) {
                                         }} />
                                     </Cell>
                                 </Row>)
-                            })}
+                            }}
                         </TableBody>
                     </Table>
                 </div>
@@ -81,26 +86,4 @@ export default function User({ users }) {
             </div>
         </AppLayout>
     )
-}
-
-function getPages(curr_page, last_page) {
-    const start = Math.max(curr_page - 3, 1);
-    const end = Math.min(curr_page + 3, last_page);
-
-    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-}
-
-function updateQueryParams(uri, key, value) {
-    const url = new URL(uri || window.location.href);
-    if (url.searchParams.has(key)) {
-        url.searchParams.set(key, value);
-    } else {
-        url.searchParams.append(key, value);
-    }
-    return url.toString();
-}
-
-function getQueryParams(key) {
-    const url = new URL(window.location.href);
-    return url.searchParams.get(key);
 }

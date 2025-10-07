@@ -9,18 +9,18 @@ use Inertia\Inertia;
 
 class RoleController extends Controller
 {
-    public function __construct(protected App\Services\RoleService $roleService, protected App\Services\PermissionService $permissionService)
+    public function __construct(protected App\Services\RoleService $roleService)
     {}
 
-    public function index()
+    public function index(Request $request)
     {
-        $roles = $this->roleService->getAllRole();
+        $roles = $this->roleService->getAllRole($request->all());
         Breadcrumbs::for('roles', function($trail) {
             $trail->parent('home');
             $trail->push('Roles', route('roles.index'));
         });
         Inertia::share('breadcrumbs', Breadcrumbs::generate('roles')->toArray());
-        $permissions = $this->permissionService->getAllPermission();
+        $permissions = App\Models\Permission::all();
         return Inertia::render('role/index', compact('roles', 'permissions'));
     }
 

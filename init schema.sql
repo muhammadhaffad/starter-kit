@@ -356,3 +356,44 @@ DROP CONSTRAINT menu_permission_pkey;
 
 ALTER TABLE menu_permission
 ADD CONSTRAINT menu_permission_pkey PRIMARY KEY (menu_id, permission_id, route);
+
+update menus set menu_active_pattern = 'users.*' where route = 'users.index';
+update menus set menu_active_pattern = 'permissions.*' where route = 'permissions.index';
+update menus set menu_active_pattern = 'roles.*' where route = 'roles.index';
+update menus set menu_active_pattern = 'menus.*' where route = 'menus.index';
+update menus set menu_active_pattern = 'account-settings.*' where route = 'account-settings.index';
+update menus set menu_active_pattern = 'dashboard.*' where route = 'dashboard.index';
+
+delete from menu_permission;
+
+insert into menu_permission (menu_id, permission_id, route) values 
+    (1, 1, 'dashboard.index'),
+    (2, 4, 'users.index'),
+    (2, 5, 'users.create'),
+    (2, 6, 'users.detail'),
+    (2, 6, 'users.detail.update-profile'),
+    (2, 6, 'users.detail.change-password'),
+    (2, 6, 'users.detail.change-role'),
+    (2, 7, 'users.detail.deactivate'),
+    (2, 7, 'users.detail.reactivate'),
+    (2, 5, 'users.store'),
+    (3, 8, 'permissions.index'),
+    (3, 9, 'permissions.create'),
+    (3, 10, 'permissions.update'),
+    (3, 11, 'permissions.delete'),
+    (4, 12, 'roles.index'),
+    (4, 13, 'roles.create'),
+    (4, 14, 'roles.update'),
+    (4, 15, 'roles.delete'),
+    (5, 16, 'menus.index'),
+    (5, 17, 'menus.add'),
+    (5, 17, 'menus.create'),
+    (5, 18, 'menus.detail'),
+    (5, 18, 'menus.update-order'),
+    (5, 19, 'menus.destroy'),
+    (5, 18, 'menus.update'),
+    (6, 2, 'account-settings.index'),
+    (6, 3, 'account-settings.change-password'),
+    (6, 3, 'account-settings.deactivate'),
+    (6, 3, 'account-settings.update-profile');
+    

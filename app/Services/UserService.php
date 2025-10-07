@@ -7,17 +7,23 @@ use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
-    public function getAllUser(Request $request)
+    public function getAllUser($data)
     {
-        $perPage = (int) $request->get('perPage', 10);
+        $perPage = (int)($data['perPage'] ?? 10);
+        $column = in_array($data['column'] ?? null, ['name', 'email', 'is_active']) ? $data['column'] : 'id';
+        $data['direction'] = str_replace(['ascending', 'descending'], ['asc', 'desc'], $data['direction'] ?? null);
+        $direction = in_array($data['direction'] ?? null, ['asc', 'desc']) ? $data['direction'] : 'desc';
+        if ($column == 'is_active') {
+            $column = 'deleted_at';
+        }
 
         // hitung total data
-        $users = Models\User::withTrashed()->where(function ($query) use ($request) {
-            if ($request->has('search')) {
-                $query->where('name', 'like', '%' . $request->search . '%')
-                    ->orWhere('email', 'like', '%' . $request->search . '%');
+        $users = Models\User::withTrashed()->where(function ($query) use ($data) {
+            if (isset($data['search'])) {
+                $query->where('name', 'like', '%' . $data['search'] . '%')
+                    ->orWhere('email', 'like', '%' . $data['search'] . '%');
             }
-        })->orderBy('id', 'desc')->with('roles')->paginate($perPage)->withQueryString();
+        })->orderBy($column, $direction)->with('roles')->paginate($perPage)->withQueryString();
         return $users;
     }
 

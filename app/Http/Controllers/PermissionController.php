@@ -14,7 +14,7 @@ class PermissionController extends Controller
 
     public function index()
     {
-        $permissions = $this->permissionService->getAllPermission();
+        $permissions = $this->permissionService->getAllPermission(request()->all());
         Breadcrumbs::for('permission', function($trail) {
             $trail->parent('home');
             $trail->push('Permission', route('permissions.index'));

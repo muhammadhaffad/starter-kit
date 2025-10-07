@@ -40,7 +40,7 @@ function ProfileForm({ roles }) {
         post(route('users.store'));
     }
     return (
-        <Form validationErrors={errors} onSubmit={handleSubmit} className="items-center max-w-sm w-full rounded-2xl">
+        <Form validationErrors={errors} onSubmit={handleSubmit} className="items-center max-w-lg w-full rounded-2xl">
             <TextField name="email" label="Email" type="email" className="w-full" isRequired value={data.email} onChange={(value) => setData('email', value)} placeholder="email@example.com" />
             <TextField name="name" label="Name" type="text" className="w-full" isRequired value={data.name} onChange={(value) => setData('name', value)} placeholder="Name" />
             <TextField name="password" label="Password" type="password" className="w-full" isRequired value={data.password} onChange={(value) => setData('password', value)} placeholder="Password" />

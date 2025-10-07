@@ -39,7 +39,7 @@ function ProfileForm({ user }) {
         put(route('users.detail.update-profile', user.id));
     }
     return (
-        <Form validationErrors={errors} onSubmit={handleSubmit} className="items-center max-w-sm w-full rounded-2xl">
+        <Form validationErrors={errors} onSubmit={handleSubmit} className="items-center max-w-lg w-full rounded-2xl">
             <div className="self-start">
                 <h2 className="text-lg font-semibold">Profile Information</h2>
                 <p className="text-sm text-primary/50">Manage user personal information.</p>
@@ -65,7 +65,7 @@ function ChangePasswordForm({ user }) {
         });
     }
     return (
-        <Form validationErrors={errors} onSubmit={handleSubmit} className="items-center max-w-sm w-full rounded-2xl">
+        <Form validationErrors={errors} onSubmit={handleSubmit} className="items-center max-w-lg w-full rounded-2xl">
             <div className="self-start">
                 <h2 className="text-lg font-semibold">Change Password</h2>
                 <p className="text-sm text-primary/50">Update user password to keep user account secure.</p>
@@ -86,8 +86,8 @@ function ChangeRoleForm({ user, roles }) {
         put(route('users.detail.change-role', user.id));
     }
     return (
-        <Form validationErrors={errors} onSubmit={handleSubmit} className="items-center max-w-sm w-full rounded-2xl">
-            <div className="flex flex-col gap-4 items-start max-w-sm w-full">
+        <Form validationErrors={errors} onSubmit={handleSubmit} className="items-center max-w-lg w-full rounded-2xl">
+            <div className="flex flex-col gap-4 items-start max-w-lg w-full">
                 <div className="self-start">
                     <h2 className="text-lg font-semibold">Change Role</h2>
                     <p className="text-sm text-primary/50">Change user role to manage user permissions.</p>
@@ -107,7 +107,7 @@ function ChangeRoleForm({ user, roles }) {
 
 function DangerAreaForm({ user }) {
     return (
-        <div className="flex flex-col gap-4 items-center max-w-sm w-full rounded-2xl">
+        <div className="flex flex-col gap-4 items-center max-w-lg w-full rounded-2xl">
             <div className="self-start">
                 <h2 className="text-lg font-semibold">Danger Area</h2>
                 <p className="text-sm text-primary/50">{user.deleted_at ? 'Reactivate' : 'Deactivate'} your account.</p>

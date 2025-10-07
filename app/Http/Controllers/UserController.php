@@ -31,7 +31,7 @@ class UserController extends Controller
             $trail->push('Users', '/users');
         });
         Inertia::share('breadcrumbs', Breadcrumbs::generate('users')->toArray());
-        $users = $this->userService->getAllUser($request);
+        $users = $this->userService->getAllUser($request->all());
         return Inertia::render('user/index', [
             'users' => $users,
         ]);

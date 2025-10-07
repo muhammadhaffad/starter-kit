@@ -33,7 +33,7 @@ function ProfileForm({ user }) {
         post(route('account-settings.update-profile'));
     }
     return (
-        <Form validationErrors={errors} onSubmit={handleSubmit} className="items-center max-w-sm w-full rounded-2xl">
+        <Form validationErrors={errors} onSubmit={handleSubmit} className="items-center max-w-lg w-full rounded-2xl">
             <div className="self-start">
                 <h2 className="text-lg font-semibold">Profile Information</h2>
                 <p className="text-sm text-primary/50">Manage your personal information.</p>
@@ -60,7 +60,7 @@ function ChangePasswordForm() {
         });
     }
     return (
-        <Form validationErrors={errors} onSubmit={handleSubmit} className="items-center max-w-sm w-full rounded-2xl">
+        <Form validationErrors={errors} onSubmit={handleSubmit} className="items-center max-w-lg w-full rounded-2xl">
             <div className="self-start">
                 <h2 className="text-lg font-semibold">Change Password</h2>
                 <p className="text-sm text-primary/50">Update your current password to keep your account secure.</p>
@@ -82,7 +82,7 @@ function DangerAreaForm() {
         post(route('account-settings.deactivate'));
     }
     return (
-        <div className="flex flex-col gap-4 items-center max-w-sm w-full rounded-2xl">
+        <div className="flex flex-col gap-4 items-center max-w-lg w-full rounded-2xl">
             <div className="self-start">
                 <h2 className="text-lg font-semibold">Danger Area</h2>
                 <p className="text-sm text-primary/50">Deactivate your account.</p>
