@@ -69,7 +69,7 @@ export default function AppLayout({ children }) {
                                 <div className="flex items-center gap-2">
                                     <img
                                         alt=""
-                                        src={`${window.Laravel.asset_url}/${user?.avatar}` || "/yoji-noda.jpg"}
+                                        src={user?.avatar ? `${window.Laravel.asset_url}/${user?.avatar}` : "/yoji-noda.jpg"}
                                         className="w-8 h-8 rounded-full"
                                     />
                                     {state === "expanded" && <div className="flex flex-col items-start -space-y-1 text-nowrap">

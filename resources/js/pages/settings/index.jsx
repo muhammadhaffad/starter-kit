@@ -54,7 +54,7 @@ function ProfileForm({ user }) {
 }
 
 function UploadProfilePicture({ user }) {
-    const [preview, setPreview] = useState(`${window.Laravel.asset_url}/${user?.avatar}` || '/yoji-noda.jpg');
+    const [preview, setPreview] = useState(user?.avatar ? `${window.Laravel.asset_url}/${user?.avatar}` : "/yoji-noda.jpg");
 
     const { data, setData, post, processing, progress, errors, reset } = useForm({
         avatar: null,

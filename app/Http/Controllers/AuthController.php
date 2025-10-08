@@ -36,4 +36,34 @@ class AuthController extends Controller
         $this->authService->logout($request);
         return redirect()->to('/login')->with('success', 'You have successfully logged out');
     }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+        
+        $email = $request->input('email');
+        if ($this->authService->sendTokenForgotPassword($email)) {
+            return redirect()->to('/login')->with('success', 'Check your email for a password reset link');
+        }
+        return back()->withErrors([
+            'email' => 'The provided email does not match our records.',
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
+        ]);
+    
+        $data = $request->only('email', 'password', 'password_confirmation', 'token');
+        if ($this->authService->resetPassword($data)) {
+            return redirect()->to('/login')->with('success', 'Your password has been reset');
+        }
+        return back()->withErrors([
+            'email' => 'The provided email does not match our records.',
+        ]);
+    }
 }

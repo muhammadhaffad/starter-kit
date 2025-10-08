@@ -21,6 +21,16 @@ Route::get('/login', function () {
 })->middleware('guest')->name('login');
 Route::post('/login', [App\Http\Controllers\AuthController::class, 'auth'])->middleware('guest')->name('login.auth');
 Route::post('/logout', [App\Http\Controllers\AuthController::class, 'deauth'])->middleware('auth')->name('logout');
+Route::get('/forgot-password', function () {
+    return Inertia::render('forgot-password');
+})->middleware('guest')->name('password.forgot');
+Route::post('/forgot-password', [App\Http\Controllers\AuthController::class, 'forgotPassword'])->middleware('guest')->name('password.forgot.auth');
+Route::get('/reset-password/{token}', function ($token) {
+    return Inertia::render('reset-password', [
+        'token' => $token,
+    ]);
+})->middleware('guest')->name('password.reset');
+Route::post('/reset-password/{token}', [App\Http\Controllers\AuthController::class, 'resetPassword'])->middleware('guest')->name('password.reset.auth');
 
 Breadcrumbs::for('home', function($trail) {
     $trail->push('Home', '/dashboard');
