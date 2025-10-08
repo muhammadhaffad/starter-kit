@@ -45,6 +45,7 @@ class AuthService
             'email' => $data['email'],
             'password' => $data['password'],
             'password_confirmation' => $data['password_confirmation'],
+            'token' => $data['token']
         ], function (\App\Models\User $user, string $password) {
             $user->forceFill([
                 'password' => Hash::make($password),
@@ -55,9 +56,9 @@ class AuthService
         });
 
         if ($status == Password::PASSWORD_RESET) {
-            return true;
+            return [true, __($status)];
         }
 
-        return false;
+        return [false, __($status)];
     }
 }

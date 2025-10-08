@@ -59,11 +59,10 @@ class AuthController extends Controller
         ]);
     
         $data = $request->only('email', 'password', 'password_confirmation', 'token');
-        if ($this->authService->resetPassword($data)) {
-            return redirect()->to('/login')->with('success', 'Your password has been reset');
+        list($bool, $status) = $this->authService->resetPassword($data);
+        if ($bool) {
+            return redirect()->to('/login')->with('success', $status);
         }
-        return back()->withErrors([
-            'email' => 'The provided email does not match our records.',
-        ]);
+        return back()->with('error', $status);
     }
 }

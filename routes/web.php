@@ -25,12 +25,13 @@ Route::get('/forgot-password', function () {
     return Inertia::render('forgot-password');
 })->middleware('guest')->name('password.forgot');
 Route::post('/forgot-password', [App\Http\Controllers\AuthController::class, 'forgotPassword'])->middleware('guest')->name('password.forgot.auth');
-Route::get('/reset-password/{token}', function ($token) {
+Route::get('/reset-password/{token}', function ($token, \Illuminate\Http\Request $request) {
     return Inertia::render('reset-password', [
         'token' => $token,
+        'email' => $request->email
     ]);
 })->middleware('guest')->name('password.reset');
-Route::post('/reset-password/{token}', [App\Http\Controllers\AuthController::class, 'resetPassword'])->middleware('guest')->name('password.reset.auth');
+Route::post('/reset-password', [App\Http\Controllers\AuthController::class, 'resetPassword'])->middleware('guest')->name('password.reset.auth');
 
 Breadcrumbs::for('home', function($trail) {
     $trail->push('Home', '/dashboard');
