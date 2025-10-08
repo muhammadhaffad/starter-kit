@@ -30,7 +30,7 @@ export default function User({ users }) {
                     <SearchField autoFocus className={'max-w-2xs'} defaultValue={getQueryParams('search')} placeholder="Search..." name="search" />
                 </Form>
                 <div className="overflow-auto">
-                    <Table className="w-full" aria-label="Files" width="100%"
+                    <Table className="w-full" aria-label="Users" width="100%"
                         sortDescriptor={{
                             column: getQueryParams('column'),
                             direction: getQueryParams('direction')

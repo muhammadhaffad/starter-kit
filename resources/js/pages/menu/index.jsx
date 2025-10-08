@@ -96,7 +96,7 @@ function TreeMenu({ menus, className }) {
         >
             {function renderItem(item) {
                 return <TreeItem id={item.id}>
-                    <TreeItemContent className="w-full">
+                    <TreeItemContent className="w-full cursor-move">
                         {({ hasChildItems }) => {
                             const Icon = Lucide[item.value.icon];
                             return <>
@@ -115,7 +115,7 @@ function TreeMenu({ menus, className }) {
                                         <Lucide.Edit3 size={16} className="text-yellow-500" />
                                     </Link>
                                     <DialogTrigger>
-                                        <Button variant="icon" className="flex w-min items-center ">
+                                        <Button variant="icon" className="flex w-min items-center cursor-pointer">
                                             <Lucide.Trash2 size={16} className="text-red-500" />
                                         </Button>
                                         <Modal>

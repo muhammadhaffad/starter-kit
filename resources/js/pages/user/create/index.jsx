@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ComboBox, ComboBoxItem } from "@/components/ui/ComboBox";
 import { Form } from "@/components/ui/form";
 import { Tag, TagGroup } from "@/components/ui/TagGroup";
-import { TextField } from "@/components/ui/text-field";
+import { TextField } from "@/components/ui/TextField";
 import { useForm } from "@inertiajs/react";
 import { useFormValidation } from "@react-aria/form";
 import { useFormValidationState } from "@react-stately/form";

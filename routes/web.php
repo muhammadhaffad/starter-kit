@@ -37,6 +37,7 @@ Route::get('/dashboard', function () {
 Route::prefix('/account-settings')->middleware(['auth', 'check-menu-access'])->group(function () {
     Route::get('/', [App\Http\Controllers\UserController::class, 'indexSelf'])->name('account-settings.index');
     Route::post('/update-profile', [App\Http\Controllers\UserController::class, 'updateProfile'])->name('account-settings.update-profile');
+    Route::post('/upload-profile-picture', [App\Http\Controllers\UserController::class, 'uploadProfilePicture'])->name('account-settings.upload-profile-picture');
     Route::post('/change-password', [App\Http\Controllers\UserController::class, 'updatePassword'])->name('account-settings.change-password');
     Route::post('/deactivate', [App\Http\Controllers\UserController::class, 'deactivate'])->name('account-settings.deactivate');
 });

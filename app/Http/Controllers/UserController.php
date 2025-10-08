@@ -86,6 +86,15 @@ class UserController extends Controller
         return redirect()->back()->with('success', 'Profile updated successfully');
     }
 
+    public function uploadProfilePicture(Request $request)
+    {
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,webp|max:1024',
+        ]);
+        $this->userService->uploadProfilePicture(auth()->user()->id, $request);
+        return redirect()->back()->with('success', 'Profile picture updated successfully');
+    }
+
     public function updatePassword(Request $request)
     {
         $request->validate([

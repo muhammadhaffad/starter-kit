@@ -1,5 +1,5 @@
 import { Form } from "@/components/ui/Form";
-import { TextField } from "@/components/ui/text-field";
+import { TextField } from "@/components/ui/TextField";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useForm, usePage } from "@inertiajs/react";
@@ -34,7 +34,7 @@ export default function Login() {
                         <h1 className="text-xl font-bold">Login to your account</h1>
                         <p className="text-sm text-primary/50">Enter your email below to login to your account</p>
                     </div>
-                    <TextField name="email" label="Email" type="email" className="w-full" isRequired value={data.email} onChange={(value) => setData('email', value)} placeholder="email@example.com" />
+                    <TextField autoFocus name="email" label="Email" type="email" className="w-full" isRequired value={data.email} onChange={(value) => setData('email', value)} placeholder="email@example.com" />
                     <TextField name="password" label="Password" type="password" className="w-full" isRequired value={data.password} onChange={(value) => setData('password', value)} placeholder="Password" />
                     <Checkbox name="remember" label="Remember me" className="self-start" value={data.remember} onChange={(value) => setData('remember', value)}>Remember me</Checkbox>
                     <Button type="submit" className="w-full" isDisabled={processing}>Login</Button>

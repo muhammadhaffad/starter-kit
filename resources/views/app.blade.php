@@ -5,6 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Laravel</title>
+    <script>
+        window.Laravel = {
+            asset_url: "{{ asset('storage') }}"
+        }
+    </script>
     @routes
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])

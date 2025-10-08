@@ -49,6 +49,15 @@ class UserService
         $user->update($data);
     }
 
+    public function uploadProfilePicture($idUser, $request)
+    {
+        $user = Models\User::find($idUser);
+        \Illuminate\Support\Facades\Storage::delete('public/' . $user->avatar);
+        $user->update([
+            'avatar' => $request->file('avatar')->store('images/avatars', 'public')
+        ]);
+    }
+
     public function updatePassword($newPassword, $idUser)
     {
         $user = Models\User::find($idUser);

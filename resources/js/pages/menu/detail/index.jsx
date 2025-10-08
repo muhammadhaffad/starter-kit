@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ComboBox, ComboBoxItem } from "@/components/ui/ComboBox";
 import { Label } from "@/components/ui/field";
 import { Form } from "@/components/ui/form";
-import { TextField } from "@/components/ui/text-field";
+import { TextField } from "@/components/ui/TextField";
 import { useForm } from "@inertiajs/react";
 import { Group, Pressable } from "react-aria-components";
 import * as Lucide from "lucide-react";

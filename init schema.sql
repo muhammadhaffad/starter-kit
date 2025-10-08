@@ -397,3 +397,7 @@ insert into menu_permission (menu_id, permission_id, route) values
     (6, 3, 'account-settings.deactivate'),
     (6, 3, 'account-settings.update-profile');
     
+alter table users add column avatar text;
+
+insert into menu_permission (menu_id, permission_id, route) values
+    (6, 3, 'account-settings.upload-profile-picture');

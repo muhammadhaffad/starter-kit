@@ -274,7 +274,7 @@ const SidebarContent = ({ className, ...props }) => {
         <div
             data-slot="sidebar-content"
             className={twMerge(
-                "flex min-h-0 flex-1 scroll-mb-96 flex-col overflow-y-auto overflow-x-hidden *:data-[slot=sidebar-section]:border-l-0",
+                "flex min-h-0 flex-1 scroll-mb-96 flex-col overflow-y-auto overflow-x-hidden *:data-[slot=sidebar-section]:border-l-0 px-4 md:px-0",
                 state === "collapsed" ? "items-start" : "mask-b-from-95%",
                 className
             )}
@@ -438,7 +438,7 @@ function TreeItemContent({ children, ...props }) {
                     {selectionMode === "multiple" && selectionBehavior === "toggle" && (
                         <Checkbox slot="selection" />
                     )}
-                    <div className="flex items-center w-full p-0">
+                    <div className="flex items-center w-full p-1 md:p-0">
                         <div className="shrink-0 group-data-[state=expanded]:w-[calc(calc(var(--tree-item-level)_-_1)_*_calc(var(--spacing)_*_3))]" />
                         {typeof children === "function" ? children({ collapsed, hasChildItems }) : children}
                     </div>
