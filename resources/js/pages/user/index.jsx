@@ -19,7 +19,7 @@ export default function User({ users }) {
                 <div className="flex gap-2 items-baseline">
                     <h1 className="text-xl font-bold">Users</h1>
                     /
-                    <Link href={route('users.create')} className="text-primary hover:underline">Create User</Link>
+                    <Link href={route('users.create')} className="text-blue-500 hover:underline">Create User</Link>
                 </div>
                 <Form onSubmit={(e) => {
                     e.preventDefault();
