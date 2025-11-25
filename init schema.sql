@@ -9,6 +9,12 @@
 -- =========================
 -- ROLES
 -- =========================
+insert into public.users (
+    name, email, password
+) values (
+    'Administrator', 'admin@example.com', '$2y$12$cs8zb4u2z7JuDJyjUkHIRO69EBTo2kqB8yXwEYGKpqfxHBGrEUlBK'
+)
+
 CREATE TABLE public.roles (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) UNIQUE NOT NULL,
@@ -175,7 +181,7 @@ WITH RECURSIVE menu_tree AS (
         mt.path_order || m.order_index AS path_order,
         (mt.path_name || ' > ' || m.name::text) AS path_name
     FROM public.menus m
-    JOIN public.menu_tree mt ON m.parent_id = mt.id
+    JOIN menu_tree mt ON m.parent_id = mt.id
 )
 SELECT 
     menu_tree.id,
@@ -205,7 +211,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER public.ta_adjust_menu_order_after_delete
+CREATE TRIGGER ta_adjust_menu_order_after_delete
 AFTER DELETE ON public.menus
 FOR EACH ROW
 EXECUTE PROCEDURE public.adjust_menu_order_after_delete();
@@ -228,7 +234,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER public.tb_set_menu_order_before_insert
+CREATE TRIGGER tb_set_menu_order_before_insert
 BEFORE INSERT ON public.menus
 FOR EACH ROW
 EXECUTE PROCEDURE public.set_menu_order_before_insert();
@@ -272,7 +278,7 @@ CREATE OR REPLACE VIEW public.menu_tree AS
             mt.path_order || m.id AS path_order,
             (mt.path_name || ' > '::text) || m.name::text AS path_name
            FROM public.menus m
-             JOIN public.menu_tree mt ON m.parent_id = mt.id
+             JOIN menu_tree mt ON m.parent_id = mt.id
         )
  SELECT menu_tree.id,
     menu_tree.name,
@@ -322,7 +328,7 @@ CREATE OR REPLACE VIEW public.menu_tree AS
             mt.path_order || m.id AS path_order,
             (mt.path_name || ' > '::text) || m.name::text AS path_name
            FROM public.menus m
-             JOIN public.menu_tree mt ON m.parent_id = mt.id
+             JOIN menu_tree mt ON m.parent_id = mt.id
         )
  SELECT menu_tree.id,
     menu_tree.name,
