@@ -1,20 +1,20 @@
 import AppLayout from "@/components/layout/app-layout";
-import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
-import { Cell, Column, Row, Table, TableHeader } from "@/components/ui/table";
+import { Button } from "@/components/ui/Button";
+import { Form } from "@/components/ui/Form";
+import { Cell, Column, Row, Table, TableHeader } from "@/components/ui/Table";
 import { TextField } from "@/components/ui/TextField";
 import { ChevronLeft, ChevronRight, Edit3, Trash, Trash2 } from "lucide-react";
 import { DialogTrigger, Heading, Pressable, ResizableTableContainer, TableBody } from "react-aria-components";
 import { router, useForm } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 import { AlertDialog } from "@/components/ui/AlertDialog";
-import { Modal } from "@/components/ui/modal";
-import { Input } from "@/components/ui/field";
+import { Modal } from "@/components/ui/Modal";
+import { Input } from "@/components/ui/Field";
 import AppHead from "@/components/layout/app-head";
 import { Dialog } from "@/components/ui/Dialog";
 import { getPages, getQueryParams, updateQueryParams } from "@/utils";
 import { SearchField } from "@/components/ui/SearchField";
-import { Link } from "@/components/ui/link";
+import { Link } from "@/components/ui/Link";
 
 export default function Permission({ permissions }) {
     const [selectedKeys, setSelectedKeys] = useState(new Set([]));

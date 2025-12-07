@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./dialog"
+} from "./Dialog"
 
 type Sides = "top" | "bottom" | "left" | "right"
 const generateCompoundVariants = (sides: Array<Sides>) => {

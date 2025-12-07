@@ -6,13 +6,13 @@ import {
 } from "react-aria-components"
 import { ChevronRight } from "lucide-react"
 import { tv } from "tailwind-variants"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@/components/ui/Checkbox"
 import { composeTailwindRenderProps, focusRing } from "@/components/ui/utils"
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { twJoin, twMerge } from "tailwind-merge";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import * as Lucide from "lucide-react";
-import { SheetContent } from "@/components/ui/sheet";
+import { SheetContent } from "@/components/ui/Sheet";
 import { Text } from "react-aria-components";
 
 const SIDEBAR_WIDTH = "17rem"

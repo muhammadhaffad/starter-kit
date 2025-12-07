@@ -1,13 +1,13 @@
-import { Cell, Column, Row, Table, TableHeader } from "@/components/ui/table";
+import { Cell, Column, Row, Table, TableHeader } from "@/components/ui/Table";
 import { Tag, TagGroup } from "@/components/ui/TagGroup";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import AppLayout from "@/components/layout/app-layout";
 import { TableBody } from "react-aria-components";
-import { Link } from "@/components/ui/link";
+import { Link } from "@/components/ui/Link";
 import { Switch } from "@/components/ui/Switch";
 import { router } from "@inertiajs/react";
 import { SearchField } from "@/components/ui/SearchField";
-import { Form } from "@/components/ui/form";
+import { Form } from "@/components/ui/Form";
 import AppHead from "@/components/layout/app-head";
 import { getPages, getQueryParams, updateQueryParams } from "@/utils";
 

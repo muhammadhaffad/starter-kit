@@ -1,6 +1,6 @@
 import { Form } from "@/components/ui/Form";
 import { TextField } from "@/components/ui/TextField";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { useForm, usePage } from "@inertiajs/react";
 import RootWrapper from "@/components/layout/root-wrapper";
 

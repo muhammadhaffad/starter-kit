@@ -9,11 +9,7 @@
 -- =========================
 -- ROLES
 -- =========================
-insert into public.users (
-    name, email, password
-) values (
-    'Administrator', 'admin@example.com', '$2y$12$cs8zb4u2z7JuDJyjUkHIRO69EBTo2kqB8yXwEYGKpqfxHBGrEUlBK'
-)
+insert into public.users (name, email, password) values ('admin', 'admin@example.com', '$2y$12$shr9us4trQyRgWrRXgkXo.DLhCiW/NFb7CsuDR8h739EBsb5SKGX6'); -- password: password
 
 CREATE TABLE public.roles (
     id SERIAL PRIMARY KEY,
@@ -73,8 +69,6 @@ CREATE TABLE public.menu_permission (
 );
 
 alter table public.users add column deleted_at timestamp(0) default null;
-
-insert into public.users (name, email, password) values ('admin', 'admin@example.com', '$2y$12$shr9us4trQyRgWrRXgkXo.DLhCiW/NFb7CsuDR8h739EBsb5SKGX6'); -- password: password
 
 insert into public.permissions (name, description) values 
     ('dashboard.index', 'View dashboard'),

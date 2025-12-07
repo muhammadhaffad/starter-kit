@@ -1,10 +1,10 @@
 import AppLayout from "@/components/layout/app-layout";
 import { Form } from "@/components/ui/Form";
 import { TextField } from "@/components/ui/TextField";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { useForm, usePage } from "@inertiajs/react";
 import { Dialog } from "@/components/ui/Dialog";
-import { Modal } from "@/components/ui/modal";
+import { Modal } from "@/components/ui/Modal";
 import { DialogTrigger, FileTrigger, Group, Heading, Pressable } from "react-aria-components";
 import AppHead from "@/components/layout/app-head";
 import { Label } from "@/components/ui/Field";

@@ -9,7 +9,7 @@ import {
   Text,
 } from "react-aria-components"
 import { twMerge } from "tailwind-merge"
-import { Button, type ButtonProps } from "./button"
+import { Button, type ButtonProps } from "./Button"
 import { X } from "lucide-react"
 
 const Dialog = ({

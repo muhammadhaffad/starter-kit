@@ -1,7 +1,7 @@
 import { Form } from "@/components/ui/Form";
 import { TextField } from "@/components/ui/TextField";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/Button";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { useForm, usePage } from "@inertiajs/react";
 import RootWrapper from "@/components/layout/root-wrapper";
 import { Link } from "@/components/ui/Link";

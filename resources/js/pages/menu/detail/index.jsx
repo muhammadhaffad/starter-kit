@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { ComboBox, ComboBoxItem } from "@/components/ui/ComboBox";
-import { Label } from "@/components/ui/field";
-import { Form } from "@/components/ui/form";
+import { Label } from "@/components/ui/Field";
+import { Form } from "@/components/ui/Form";
 import { TextField } from "@/components/ui/TextField";
 import { useForm } from "@inertiajs/react";
 import { Group, Pressable } from "react-aria-components";

@@ -1,10 +1,10 @@
 import { SidebarProvider, Sidebar, SidebarContent, SidebarInset, SidebarTrigger, SidebarNav, SidebarHeader, SidebarLabel, SidebarTree, SidebarTreeItem, SidebarTreeItemContent, SidebarFooter } from "@/components/layout/sidebar";
 import * as Lucide from 'lucide-react';
-import { Breadcrumb, Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { Breadcrumb, Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Form, Link, router, usePage } from "@inertiajs/react";
 import { Collection, Header, MenuTrigger, Pressable, Text } from "react-aria-components";
-import { Button } from "@/components/ui/button";
-import { Menu, MenuItem, MenuSection, MenuSeparator } from "@/components/ui/menu";
+import { Button } from "@/components/ui/Button";
+import { Menu, MenuItem, MenuSection, MenuSeparator } from "@/components/ui/Menu";
 import RootWrapper from "@/components/layout/root-wrapper";
 import { useRef } from "react";
 import { twMerge } from "tailwind-merge";

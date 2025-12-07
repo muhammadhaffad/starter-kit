@@ -1,17 +1,17 @@
 import AppLayout from "@/components/layout/app-layout";
-import { Tree, TreeItem, TreeItemContent } from "@/components/ui/tree";
+import { Tree, TreeItem, TreeItemContent } from "@/components/ui/Tree";
 import { Collection, DialogTrigger, useDragAndDrop } from "react-aria-components";
 import * as Lucide from "lucide-react";
 import { useTreeData } from "react-stately";
 import { Tag, TagGroup } from "@/components/ui/TagGroup";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { useEffect, useRef, useState } from "react";
 import { router } from "@inertiajs/react";
 import { twMerge } from "tailwind-merge";
-import { Modal } from "@/components/ui/modal";
+import { Modal } from "@/components/ui/Modal";
 import { AlertDialog } from "@/components/ui/AlertDialog";
 import AppHead from "@/components/layout/app-head";
-import { Link } from "@/components/ui/link";
+import { Link } from "@/components/ui/Link";
 
 export default function Menu({ menus }) {
     return (

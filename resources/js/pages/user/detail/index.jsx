@@ -1,10 +1,10 @@
 import AppHead from "@/components/layout/app-head";
 import AppLayout from "@/components/layout/app-layout";
 import { AlertDialog } from "@/components/ui/AlertDialog";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { ComboBox, ComboBoxItem } from "@/components/ui/ComboBox";
-import { Form } from "@/components/ui/form";
-import { Modal } from "@/components/ui/modal";
+import { Form } from "@/components/ui/Form";
+import { Modal } from "@/components/ui/Modal";
 import { Tag, TagGroup } from "@/components/ui/TagGroup";
 import { TextField } from "@/components/ui/TextField";
 import { router, useForm } from "@inertiajs/react";
